@@ -6,7 +6,6 @@
 #ifndef BRAVE_BROWSER_HISTORY_EMBEDDINGS_BRAVE_HISTORY_EMBEDDINGS_STATUS_H_
 #define BRAVE_BROWSER_HISTORY_EMBEDDINGS_BRAVE_HISTORY_EMBEDDINGS_STATUS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
 class Profile;
@@ -19,7 +18,7 @@ namespace history_embeddings {
 // browser relaunches.
 class BraveHistoryEmbeddingsStatus : public base::SupportsUserData::Data {
  public:
-  BraveHistoryEmbeddingsStatus(Profile* profile, bool enabled);
+  explicit BraveHistoryEmbeddingsStatus(bool enabled);
 
   // Captures the setting at profile setup, before anything gated on it is
   // built. Later calls are no-ops.
@@ -32,11 +31,7 @@ class BraveHistoryEmbeddingsStatus : public base::SupportsUserData::Data {
   // The setting the embedding services were built with.
   bool IsEnabled() const;
 
-  // Whether the setting has changed since, so it is waiting on a relaunch.
-  bool NeedsRestart() const;
-
  private:
-  const raw_ptr<Profile> profile_;
   const bool enabled_;
 };
 

@@ -35,8 +35,8 @@ bool ShouldForceHistoryEmbeddingsFeatureDisabled() {
 }
 
 // Replaces IsHistoryEmbeddingsEnabledForProfile()'s upstream body: gates it on
-// the per-profile kBraveHistoryEmbeddingsEnabled pref backing the
-// chrome://history side bar toggle.
+// the per-profile kBraveHistoryEmbeddingsEnabled pref backing the Semantic
+// history search toggle in brave://settings/privacy.
 bool ComputeHistoryEmbeddingsEnabledForProfile(Profile* profile) {
 #if BUILDFLAG(ENABLE_LOCAL_AI)
   if (!IsHistoryEmbeddingsFeatureEnabled()) {

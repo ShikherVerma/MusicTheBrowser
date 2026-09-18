@@ -19,9 +19,8 @@ constexpr char kBraveHistoryEmbeddingsStatusKey[] =
 
 }  // namespace
 
-BraveHistoryEmbeddingsStatus::BraveHistoryEmbeddingsStatus(Profile* profile,
-                                                           bool enabled)
-    : profile_(profile), enabled_(enabled) {}
+BraveHistoryEmbeddingsStatus::BraveHistoryEmbeddingsStatus(bool enabled)
+    : enabled_(enabled) {}
 
 // static
 void BraveHistoryEmbeddingsStatus::CreateForProfile(Profile* profile) {
@@ -32,7 +31,7 @@ void BraveHistoryEmbeddingsStatus::CreateForProfile(Profile* profile) {
   profile->SetUserData(
       kBraveHistoryEmbeddingsStatusKey,
       std::make_unique<BraveHistoryEmbeddingsStatus>(
-          profile, IsHistoryEmbeddingsEnabledForProfile(profile)));
+          IsHistoryEmbeddingsEnabledForProfile(profile)));
 }
 
 // static
@@ -47,8 +46,14 @@ bool BraveHistoryEmbeddingsStatus::IsEnabled() const {
   return enabled_;
 }
 
-bool BraveHistoryEmbeddingsStatus::NeedsRestart() const {
-  return IsHistoryEmbeddingsEnabledForProfile(profile_) != enabled_;
-}
-
 }  // namespace history_embeddings
+
+// Forward declared by the chromium_src overrides that need the captured
+// setting, so neither carries a Brave header: the passage embedder gate in
+// //chrome/browser/passage_embeddings and brave://history's data source in
+// //chrome/browser/ui/webui/history.
+bool BraveHistoryEmbeddingsEnabledAtStartup(Profile* profile) {
+  return history_embeddings::BraveHistoryEmbeddingsStatus::GetForProfile(
+             profile)
+      ->IsEnabled();
+}
