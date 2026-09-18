@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "brave/browser/brave_browser_process.h"
 #include "brave/browser/extensions/brave_extension_provider.h"
 #include "brave/browser/tor/tor_profile_service_factory.h"
@@ -50,7 +52,16 @@ BraveExtensionManagement::BraveExtensionManagement(Profile* profile)
             base::Unretained(this)));
 #endif
   }
-  Cleanup(profile);
+  // Deferred rather than called synchronously: this constructor runs while
+  // the Profile's KeyedServices are still being built (e.g. during
+  // TestingProfile::Init(), before all profile prefs are finalized), and
+  // Cleanup() transitively queries IncognitoModePrefs, which now also
+  // creates and permanently caches enterprise_isolated_mode's
+  // IsolatedModeSettingsService for this profile. Running that too early
+  // locks in a stale (pre-policy) cached value for the profile's lifetime.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&BraveExtensionManagement::Cleanup,
+                                weak_factory_.GetWeakPtr(), profile));
 }
 
 BraveExtensionManagement::~BraveExtensionManagement() {
