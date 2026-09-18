@@ -22,6 +22,7 @@
 #include "brave/components/debounce/core/common/pref_names.h"
 #include "brave/components/decentralized_dns/core/pref_names.h"
 #include "brave/components/email_aliases/buildflags/buildflags.h"
+#include "brave/components/local_ai/buildflags/buildflags.h"
 #include "brave/components/ntp_background_images/common/pref_names.h"
 #include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "brave/components/playlist/core/common/buildflags/buildflags.h"
@@ -60,6 +61,10 @@
 
 #if BUILDFLAG(ENABLE_CONTAINERS)
 #include "brave/components/containers/core/browser/pref_names.h"
+#endif
+
+#if BUILDFLAG(ENABLE_LOCAL_AI)
+#include "brave/components/local_ai/core/pref_names.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -320,6 +325,12 @@ const PrefsUtil::TypedPrefMap& BravePrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_brave_allowlist)[ai_chat::prefs::kBraveAIChatOllamaFetchEnabled] =
       settings_api::PrefType::kBoolean;
+
+#if BUILDFLAG(ENABLE_LOCAL_AI)
+  // On-device AI pref
+  (*s_brave_allowlist)[local_ai::prefs::kBraveHistoryEmbeddingsEnabled] =
+      settings_api::PrefType::kBoolean;
+#endif
 
 #if !BUILDFLAG(USE_GCM_FROM_PLATFORM)
   // Push Messaging Pref
