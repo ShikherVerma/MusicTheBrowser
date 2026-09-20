@@ -5,6 +5,7 @@
 
 #include "brave/browser/ui/bookmark/bookmark_prefs_service.h"
 
+#include "brave/browser/ui/bookmark/bookmark_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +26,11 @@ BookmarkPrefsService::BookmarkPrefsService(Profile* profile)
 BookmarkPrefsService::~BookmarkPrefsService() = default;
 
 void BookmarkPrefsService::OnPreferenceChanged() {
+  // kAlwaysShowBookmarkBarOnNTP may have been changed directly (e.g. from
+  // brave://settings) rather than through brave::SetBookmarkState(), so
+  // kBookmarkBarVisibilityState needs to be resynced here too.
+  brave::SyncBookmarkBarVisibilityState(prefs_);
+
   GlobalBrowserCollection::GetInstance()->ForEach(
       [this](BrowserWindowInterface* browser) {
         if (profile_->IsSameOrParent(browser->GetProfile())) {

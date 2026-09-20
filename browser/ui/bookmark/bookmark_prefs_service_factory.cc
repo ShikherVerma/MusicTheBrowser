@@ -9,7 +9,6 @@
 
 #include "base/no_destructor.h"
 #include "brave/browser/ui/bookmark/bookmark_prefs_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -44,7 +43,7 @@ BookmarkPrefsServiceFactory::BuildServiceInstanceForBrowserContext(
 
 content::BrowserContext* BookmarkPrefsServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return GetBrowserContextRedirectedInIncognito(context);
+  return context;
 }
 
 bool BookmarkPrefsServiceFactory::ServiceIsCreatedWithBrowserContext() const {
