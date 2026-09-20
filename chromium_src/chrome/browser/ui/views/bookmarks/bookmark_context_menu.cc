@@ -9,10 +9,10 @@
 
 // Upstream's `BookmarkContextMenu` constructor only descends into the submenu
 // whose command id is `IDC_BOOKMARK_BAR_SUBMENU` which is only created when
-// `ntp_features::kNtpSimplificationBookmarkBar` is enabled (disabled by
-// default for now). We could just remap the id with our
+// `ntp_features::kNtpSimplificationBookmarkBar` is enabled (enabled by default
+// as of cr156). We could just remap the id with our
 // `IDC_BRAVE_BOOKMARK_BAR_SUBMENU`, so the upstream populates Brave's submenu,
-// but we also have the containers submenu `DC_OPEN_IN_CONTAINER` that needs to
+// but we also have the containers submenu `IDC_OPEN_IN_CONTAINER` that needs to
 // be populated, so it seems better to patch here to populate all our submenus.
 #define BRAVE_BOOKMARK_CONTEXT_MENU                                    \
   if (menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {       \

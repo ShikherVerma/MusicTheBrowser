@@ -20,6 +20,13 @@ BraveBookmarkSubMenuModel::~BraveBookmarkSubMenuModel() = default;
 
 void BraveBookmarkSubMenuModel::Build(BrowserWindowInterface* browser) {
   auto index = GetIndexOfCommandId(IDC_SHOW_BOOKMARK_BAR);
+  if (!index.has_value()) {
+    // With `ntp_features::kNtpSimplificationBookmarkBar` enabled, upstream adds
+    // its own `IDC_BOOKMARK_BAR_SUBMENU` (Always Hide/Show, Only on NTP)
+    // instead of the flat `IDC_SHOW_BOOKMARK_BAR` item. Replace that with
+    // our own submenu too, same as below.
+    index = GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU);
+  }
   if (!index.has_value())
     return;
   RemoveItemAt(index.value());

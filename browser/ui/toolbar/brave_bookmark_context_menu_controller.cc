@@ -74,7 +74,46 @@ void BraveBookmarkContextMenuController::AddBraveBookmarksSubmenu(
     Profile* profile) {
   auto index = menu_model()->GetIndexOfCommandId(IDC_BOOKMARK_BAR_ALWAYS_SHOW);
   if (!index.has_value()) {
-    return;
+    // With `ntp_features::kNtpSimplificationBookmarkBar` enabled, upstream
+    // nests the bookmark-bar-visibility items and unrelated options (Show
+    // Managed Bookmarks, Toggle Show Tab Groups) inside its own
+    // `IDC_BOOKMARK_BAR_SUBMENU`, instead of adding the latter flat like it
+    // does when the feature is disabled. Hoist the unrelated items back to the
+    // top level so the menu looks and behaves the same either way, then fall
+    // through to replace the now-empty placeholder below.
+    index = menu_model()->GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU);
+    if (!index.has_value()) {
+      return;
+    }
+    ui::MenuModel* submenu = menu_model()->GetSubmenuModelAt(index.value());
+    size_t insert_at = index.value();
+    for (size_t i = 0; i < submenu->GetItemCount(); ++i) {
+      // Mirrors the string ids upstream itself uses for these commands when
+      // adding them flat (see BookmarkContextMenuController::BuildMenu and
+      // AddSubmenuItems). Labels are resolved lazily via
+      // GetLabelForCommandId, same as upstream, rather than eagerly here,
+      // since e.g. the managed bookmarks label depends on
+      // ManagedBookmarkService which may not be ready yet.
+      int string_id;
+      switch (submenu->GetCommandIdAt(i)) {
+        case IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT:
+          string_id = IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT;
+          break;
+        case IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS:
+          string_id = IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS;
+          break;
+        case IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS:
+          string_id = IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME;
+          break;
+        default:
+          // Visibility items (Always Hide/Show, Only on NTP) and the separator
+          // are dropped; Brave's own submenu replaces them.
+          continue;
+      }
+      menu_model()->InsertCheckItemWithStringIdAt(
+          insert_at++, submenu->GetCommandIdAt(i), string_id);
+    }
+    index = insert_at;
   }
   menu_model()->RemoveItemAt(index.value());
   brave_bookmarks_submenu_model_ =
