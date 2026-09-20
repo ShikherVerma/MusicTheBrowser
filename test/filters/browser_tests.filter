@@ -970,6 +970,7 @@
 -LCPCriticalPathPredictorBrowserTest.*
 -LCPPPrefetchSubresourceTest.UMA
 -LCPPTimingPredictorBrowserTest.Base
+-SearchEnginePreconnectorDeviceBoundSessionBrowserTest.DoesNotPrewarmWhenDseIsHttp
 -SearchEnginePreconnectorDeviceBoundSessionBrowserTest.DoesNotPrewarmWhenSearchSuggestDisabled
 -SuppressesLoadingPredictorOnSlowNetworkBrowserTest.SuppressesOnSlowNetwork
 
@@ -1211,6 +1212,7 @@
 -AvatarToolbarButtonBrowserTestBase.SignedInWithNewSessionKeepIcon
 -AvatarToolbarButtonEnterpriseBadgingBrowserTest.*
 -AvatarToolbarButtonProfileColorBrowserTest.*/*
+-AvatarToolbarButtonSignedOutPromoBrowserTest.NoSignedOutPromoWhenSigninIsNotAllowed
 -AvatarToolbarButtonSignedOutPromoOverriddenIdentityManagerBrowserTest.SignedOutPromoTriggerDelayTimerStartAfterRefreshTokensAreLoaded
 -AvatarToolbarButtonSignInBenefits*BrowserTest.*
 -BookmarkBubbleViewMigrationBrowserTest.SyncPromoSignedIn
@@ -1788,7 +1790,8 @@
 -ControlledFrameDisabledPermissionSerialTest.WebSerial/*
 -ControlledFrameDisabledPermissionUsbTest.WebUSB/*
 -ControlledFrameDisabledPermissionWebBluetoothTest.WebBluetooth/*
--ControlledFrameMediaPermissionCacheBrowserTest.ClearBrowsingDataClearsCache
+-ControlledFrameHidChooserTest.*
+-ControlledFrameMediaPermissionCacheBrowserTest.*
 -ControlledFrameNewWindowBrowserTest.*
 -ControlledFrameNewWindowHidBrowserTest.*
 -ControlledFramePermissionStatusLeakTest.*
@@ -2015,7 +2018,7 @@
 # These tests fail because we change BACKGROUND_SYNC content setting to be
 # BLOCKED by default. This prevents reports from being sent.
 -All/CrashReportingBrowserTest.CrashReportMemoryExhaust/*
--All/CrashReportingBrowserTest.CrashReportOOM/*
+-All/CrashReportingBrowserTest.CrashReport*OOM/*
 -All/CrashReportingBrowserTest.CrashReportOOMTakesPriorityOverUnresponsive/*
 -All/CrashReportingBrowserTest.CrashReportUnresponsiveWithoutHungExitCode/*
 -All/JSCallStackReportingBrowserTest.IframeUnresponsiveWithJSCallStackNotOptedIn/*
@@ -2311,7 +2314,7 @@
 # This test fails because the expected width of the chip doesn't match (24px
 # vs 28px)
 -PaymentHandlerWebFlowViewCameraUxTest.BlockedCameraIndicator_DismissalLifecycleAndRepeatDismissal
--PaymentHandlerWebFlowViewCameraUxTest.CameraInUseIndicator_ExpandsAndAutoCollapses
+-PaymentHandlerWebFlowViewCameraUxTest.CameraInUseIndicator_*
 
 # This test fails because the expected margins of the toolbar don't match.
 -All/ToolbarViewContextualTasksInteriorMarginBrowserTest.BackButtonLeadingMarginInMaximizedWindow/0

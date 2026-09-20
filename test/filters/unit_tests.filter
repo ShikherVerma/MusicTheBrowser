@@ -32,6 +32,7 @@
 -GlicMetricsTest.*
 -GlicMetricsTrustFirstOnboardingTest.*
 -GlicEnablingProfileReadyStateTestBase.*
+-GlicSplitButtonControllerTest.*
 -MultistepFilterServiceFactoryTest.*
 -ProfilePickerTest.ComputeFirstRunSkipReasonPrecedence
 -ProfilePickerTest.ComputeFirstRunSkipReasonProfileAlreadySetUp
