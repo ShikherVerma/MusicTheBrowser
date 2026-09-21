@@ -320,6 +320,7 @@
 -BrowserSigninDetectorServiceTest.LateObservation
 -ChromePaymentsAutofillClientTest.ShowPaymentsChurnedUsersUI_WithAccountInfo
 -ComputeProfileMenuAvatarButtonPromoInfoParamTest.*
+-ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest.*
 -ConnectorsServiceRealTimeURLIdentifierTest.ReturnsCorrectIdentifier/*
 -ContextualSearchboxHandlerSignedInTestTabsTest.GetRecentTabs_SetsShowInRecentTabChip
 -ContextualTasksEligibilityManagerTest.*
@@ -884,6 +885,15 @@
 -NetworkHintsHandlerImplTest.*
 -RenderViewContextMenuPrefsTest.LensImageSearchIssuesGoogleLensPreconnect
 -RenderViewContextMenuPrefsTest.LensRegionSearchIssuesGoogleLensPreconnect
+
+# These tests check the checked state of upstream's IDC_BOOKMARK_BAR_SUBMENU_*
+# items (Always Show/Hide, Only on NTP), but
+# BraveBookmarkContextMenuController::AddBraveBookmarksSubmenu() removes that
+# submenu and its items, replacing them with our own bookmark bar visibility
+# submenu (IDC_BRAVE_BOOKMARK_BAR_*), so the items no longer exist to be found.
+# Equivalent coverage exists in
+# brave_bookmark_context_menu_controller_unittest.cc.
+-All/BookmarkContextMenuUpdateSubMenuStateTest.UpdateSubMenuState/*
 
 # Tests below this point have not been diagnosed or had issues created yet.
 -AboutFlagsHistogramTest.*
