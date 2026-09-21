@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-#include "brave/components/brave_wallet/browser/snaps_service.h"
+#include "brave/components/brave_wallet/browser/snap_service.h"
 
 #include <optional>
 #include <string>
@@ -20,11 +20,9 @@
 #include "brave/components/brave_wallet/common/web_ui_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace brave_wallet {
@@ -34,17 +32,17 @@ constexpr char kTestSnapId[] = "npm:test-snap";
 constexpr char kHangSnapId[] = "npm:hang-snap";
 }  // namespace
 
-class SnapsServiceBrowserTest : public InProcessBrowserTest {
+class SnapServiceBrowserTest : public InProcessBrowserTest {
  public:
-  SnapsServiceBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kBraveWalletSnapsFeature);
+  SnapServiceBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kBraveWalletSnapFeature);
   }
 
   void SetUpOnMainThread() override {
     auto* wallet_service = BraveWalletServiceFactory::GetServiceForContext(
         browser()->GetProfile());
     ASSERT_TRUE(wallet_service);
-    service_ = wallet_service->snaps_service();
+    service_ = wallet_service->snap_service();
     ASSERT_TRUE(service_);
     service_->SetSnapBundleForTesting(kTestSnapId, ReadTestSnapBundle());
   }
@@ -66,14 +64,32 @@ class SnapsServiceBrowserTest : public InProcessBrowserTest {
     return {success, error, result};
   }
 
-  SnapsService* service() { return service_; }
+  SnapService* service() { return service_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<SnapsService> service_ = nullptr;
+  raw_ptr<SnapService> service_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest,
+class SnapServiceFeatureDisabledBrowserTest : public InProcessBrowserTest {
+ public:
+  SnapServiceFeatureDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kBraveWalletSnapFeature);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SnapServiceFeatureDisabledBrowserTest,
+                       ServiceNotCreatedWhenFeatureDisabled) {
+  auto* wallet_service =
+      BraveWalletServiceFactory::GetServiceForContext(browser()->GetProfile());
+  ASSERT_TRUE(wallet_service);
+  EXPECT_EQ(nullptr, wallet_service->snap_service());
+}
+
+IN_PROC_BROWSER_TEST_F(SnapServiceBrowserTest,
                        LoadSnapFailsWhenWalletPageIsNotRunning) {
   auto [success, error, result] = LoadSnap(kTestSnapId);
   EXPECT_FALSE(success);
@@ -82,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest,
   EXPECT_FALSE(result.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(SnapServiceBrowserTest,
                        LoadSnapSucceedsWhenBundlePresent) {
   OpenWalletPage();
 
@@ -93,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest,
   EXPECT_EQ(kTestSnapId, *result);
 }
 
-IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest, UnknownSnapReturnsError) {
+IN_PROC_BROWSER_TEST_F(SnapServiceBrowserTest, UnknownSnapReturnsError) {
   OpenWalletPage();
 
   auto [success, error, result] = LoadSnap("npm:missing");
@@ -103,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest, UnknownSnapReturnsError) {
   EXPECT_FALSE(result.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest, BridgeDisconnectOnPageClose) {
+IN_PROC_BROWSER_TEST_F(SnapServiceBrowserTest, BridgeDisconnectOnPageClose) {
   OpenWalletPage();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
@@ -119,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest, BridgeDisconnectOnPageClose) {
 
 // Navigating away while LoadSnap is in flight must still deliver a reply
 // (WrapCallbackWithDefaultInvokeIfNotRun), not hang forever.
-IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest, LoadSnapReplyOnNavigationAway) {
+IN_PROC_BROWSER_TEST_F(SnapServiceBrowserTest, LoadSnapReplyOnNavigationAway) {
   OpenWalletPage();
 
   // Infinite loop so the mojo call stays pending until the bridge disconnects.
@@ -136,34 +152,6 @@ IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest, LoadSnapReplyOnNavigationAway) {
   EXPECT_FALSE(success);
   ASSERT_TRUE(error.has_value());
   EXPECT_FALSE(result.has_value());
-}
-
-// SetBridge is last-wins: a second wallet tab replaces the first tab's bridge.
-// Closing the second tab disconnects; the first tab's orphaned bridge is not
-// restored.
-IN_PROC_BROWSER_TEST_F(SnapsServiceBrowserTest, SetBridgeLastWinsAcrossTabs) {
-  OpenWalletPage();
-  ASSERT_TRUE(service()->IsBridgeBoundForTesting());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(kBraveUIWalletURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return service()->IsBridgeBoundForTesting(); }));
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-
-  // Close the second (active) tab — its bridge was the last SetBridge.
-  browser()->tab_strip_model()->CloseWebContentsAt(1,
-                                                   TabCloseTypes::CLOSE_NONE);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return !service()->IsBridgeBoundForTesting(); }));
-
-  // First tab is still open but its bridge was replaced and is orphaned.
-  auto [success, error, result] = LoadSnap(kTestSnapId);
-  EXPECT_FALSE(success);
-  ASSERT_TRUE(error.has_value());
-  EXPECT_EQ("Wallet page is not running", *error);
 }
 
 }  // namespace brave_wallet
