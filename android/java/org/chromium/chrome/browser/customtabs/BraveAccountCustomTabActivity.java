@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.brave_account.BraveAccountDialogMode;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.brave_account.BraveAccountConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.util.ColorUtils;
@@ -117,16 +118,40 @@ public class BraveAccountCustomTabActivity extends CustomTabActivity {
         return dpToPx(this, 56); // the standard action bar height on phones in portrait
     }
 
-    public static void show(Activity activity, String url, @DialogMode.EnumType int dialogMode) {
+    private static Intent createIntent(Activity activity, String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setClassName(activity, BraveAccountCustomTabActivity.class.getName());
-        intent.putExtra(EXTRA_DIALOG_MODE, dialogMode);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
         intent.putExtra(
                 CustomTabsIntent.EXTRA_COLOR_SCHEME,
                 ColorUtils.inNightMode(activity) ? COLOR_SCHEME_DARK : COLOR_SCHEME_LIGHT);
         intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_TOPLEVEL);
         IntentUtils.addTrustedIntentExtras(intent);
+        return intent;
+    }
+
+    public static void showBraveAccountDialog(
+            Activity activity,
+            String initiatingServiceName,
+            @DialogMode.EnumType int dialogMode) {
+        Uri.Builder uri = Uri.parse("brave://account").buildUpon();
+        if (!initiatingServiceName.isEmpty()) {
+            uri.appendQueryParameter(
+                    BraveAccountConstants.INITIATING_SERVICE_NAME_QUERY_PARAM,
+                    initiatingServiceName);
+        }
+
+        Intent intent = createIntent(activity, uri.build().toString());
+        intent.putExtra(EXTRA_DIALOG_MODE, dialogMode);
         activity.startActivity(intent);
+    }
+
+    public static void showBraveAccountDialog(
+            Activity activity, @DialogMode.EnumType int dialogMode) {
+        showBraveAccountDialog(activity, "", dialogMode);
+    }
+
+    public static void showBraveAccountSettings(Activity activity) {
+        activity.startActivity(createIntent(activity, "brave://account/settings"));
     }
 }

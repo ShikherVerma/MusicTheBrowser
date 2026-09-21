@@ -11,14 +11,12 @@
 #include "base/check_deref.h"
 #include "brave/browser/brave_account/dialog_mode_holder.h"
 #include "brave/browser/ui/android/brave_account/brave_account_dialog_launcher_helper.h"
-#include "brave/components/brave_account/brave_account_constants.h"
 #include "brave/components/brave_account/features.h"
 #include "brave/components/constants/webui_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
-#include "net/base/url_util.h"
 #include "ui/webui/webui_util.h"
 
 BraveAccountUIAndroid::BraveAccountUIAndroid(content::WebUI* web_ui)
@@ -39,16 +37,9 @@ void BraveAccountUIAndroid::BindInterface(
 void BraveAccountUIAndroid::OpenDialog(
     const std::string& initiating_service_name,
     brave_account::mojom::DialogMode dialog_mode) {
-  const GURL url(kBraveAccountURL);
   brave_account::ShowBraveAccountDialog(
       CHECK_DEREF(CHECK_DEREF(web_ui()).GetWebContents()),
-      (initiating_service_name.empty()
-           ? url
-           : net::AppendQueryParameter(
-                 url, brave_account::kInitiatingServiceNameQueryParam,
-                 initiating_service_name))
-          .spec(),
-      dialog_mode);
+      initiating_service_name, dialog_mode);
 }
 
 void BraveAccountUIAndroid::CloseDialog() {

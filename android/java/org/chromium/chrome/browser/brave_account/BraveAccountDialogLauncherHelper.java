@@ -20,7 +20,9 @@ import org.chromium.ui.base.WindowAndroid;
 public class BraveAccountDialogLauncherHelper {
     @CalledByNative
     private static void showBraveAccountDialog(
-            WebContents webContents, String url, @DialogMode.EnumType int dialogMode) {
+            WebContents webContents,
+            String initiatingServiceName,
+            @DialogMode.EnumType int dialogMode) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) {
             return;
@@ -31,6 +33,7 @@ public class BraveAccountDialogLauncherHelper {
             return;
         }
 
-        BraveAccountCustomTabActivity.show(activity, url, dialogMode);
+        BraveAccountCustomTabActivity.showBraveAccountDialog(
+                activity, initiatingServiceName, dialogMode);
     }
 }

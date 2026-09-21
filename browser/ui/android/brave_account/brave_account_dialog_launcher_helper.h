@@ -16,10 +16,10 @@ class WebContents;
 
 namespace brave_account {
 
-// Opens `url` in its own Brave Account custom tab, over the one serving the
-// account rows.
+// Opens the Brave Account dialog in its own Brave Account custom tab,
+// over the one serving the account rows.
 void ShowBraveAccountDialog(content::WebContents& web_contents,
-                            const std::string& url,
+                            const std::string& initiating_service_name,
                             mojom::DialogMode dialog_mode);
 
 }  // namespace brave_account

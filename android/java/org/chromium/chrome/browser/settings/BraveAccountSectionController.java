@@ -163,7 +163,7 @@ public class BraveAccountSectionController
             return false;
         }
 
-        BraveAccountCustomTabActivity.show(activity, "brave://account", dialogMode);
+        BraveAccountCustomTabActivity.showBraveAccountDialog(activity, dialogMode);
         return true;
     }
 
@@ -177,8 +177,7 @@ public class BraveAccountSectionController
             return false;
         }
 
-        BraveAccountCustomTabActivity.show(
-                activity, "brave://account/settings", DialogMode.DEFAULT);
+        BraveAccountCustomTabActivity.showBraveAccountSettings(activity);
         return true;
     }
 

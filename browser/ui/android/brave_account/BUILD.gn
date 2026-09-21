@@ -16,4 +16,8 @@ source_set("brave_account") {
     "//brave/build/android:jni_headers",
     "//content/public/browser",
   ]
+
+  public_deps = [
+    "//brave/components/brave_account/mojom",
+  ]
 }

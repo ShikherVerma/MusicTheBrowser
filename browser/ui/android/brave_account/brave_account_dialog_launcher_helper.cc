@@ -13,12 +13,12 @@
 namespace brave_account {
 
 void ShowBraveAccountDialog(content::WebContents& web_contents,
-                            const std::string& url,
+                            const std::string& initiating_service_name,
                             mojom::DialogMode dialog_mode) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_BraveAccountDialogLauncherHelper_showBraveAccountDialog(
       env, web_contents.GetJavaWebContents(),
-      base::android::ConvertUTF8ToJavaString(env, url),
+      base::android::ConvertUTF8ToJavaString(env, initiating_service_name),
       static_cast<int>(dialog_mode));
 }
 
