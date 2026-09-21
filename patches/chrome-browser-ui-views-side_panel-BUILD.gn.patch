@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/side_panel/BUILD.gn b/chrome/browser/ui/views/side_panel/BUILD.gn
-index f51ca03ca233cd31098de9cd2bf80cd9e129b28e..6aecf83a6679d6164403a3a2676472255944a052 100644
+index 1d0bd3e82b71c8f1205dd7d03ab6cdd6b29cd0d0..e9d59110e55b10440a87769482aca9e43e8825af 100644
 --- a/chrome/browser/ui/views/side_panel/BUILD.gn
 +++ b/chrome/browser/ui/views/side_panel/BUILD.gn
 @@ -2,6 +2,8 @@
@@ -19,7 +19,7 @@ index f51ca03ca233cd31098de9cd2bf80cd9e129b28e..6aecf83a6679d6164403a3a267647225
    deps = [
      "//base:i18n",
      "//chrome/app:generated_resources",
-@@ -176,6 +179,7 @@ source_set("side_panel") {
+@@ -177,6 +180,7 @@ source_set("side_panel") {
      "//ui/gfx/geometry:geometry_skia",
      "//ui/webui",
    ]

@@ -1,5 +1,5 @@
 diff --git a/content/browser/preloading/prefetch/prefetch_features.cc b/content/browser/preloading/prefetch/prefetch_features.cc
-index ccdbe0b1f1647115b0ece8222bd6429480cf1666..dc00569b96b8d2a59b1892a091e67695228260d2 100644
+index 37c1f150f09ae46db5beefdd570c6c29e0ea8643..5b2d8dc27d219243d239e5463de6d570a8b983f0 100644
 --- a/content/browser/preloading/prefetch/prefetch_features.cc
 +++ b/content/browser/preloading/prefetch/prefetch_features.cc
 @@ -21,7 +21,7 @@ BASE_FEATURE(kPrefetchUseContentRefactor, base::FEATURE_ENABLED_BY_DEFAULT);

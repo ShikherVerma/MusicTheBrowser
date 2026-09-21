@@ -1,5 +1,5 @@
 diff --git a/components/metrics/BUILD.gn b/components/metrics/BUILD.gn
-index 0780c7e744d5cd3ba06265f4d3113fb4df511875..b0b98ddcfd5deb311153bc710dfbb45ee46b83b4 100644
+index 9778fe4153893b9fdd75c27fb84bd71728410e6b..2842ba36b463ef7184567d43b912949328cb29b6 100644
 --- a/components/metrics/BUILD.gn
 +++ b/components/metrics/BUILD.gn
 @@ -2,6 +2,7 @@
