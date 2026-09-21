@@ -9,16 +9,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 
+class PrefService;
 class Profile;
 
 namespace history_embeddings {
 
 // The Semantic History Search setting a profile's embedding services run with.
 // The services are built at most once per session, so the setting is captured
-// at profile setup and then held: a later change has no effect until the
-// browser relaunches.
+// at profile setup and then held: a later change has no effect on them until
+// the browser relaunches. A change does take immediate effect on the Tab Focus
+// page-content opt-in, which is withdrawn whenever the setting goes away.
 class BraveHistoryEmbeddingsStatus : public base::SupportsUserData::Data {
  public:
   BraveHistoryEmbeddingsStatus(Profile* profile,

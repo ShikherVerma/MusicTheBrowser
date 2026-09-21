@@ -38,10 +38,12 @@ class BraveHistoryEmbeddingsStatusTest : public testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     prefs->SetBoolean(local_ai::prefs::kBraveHistoryEmbeddingsEnabled, enabled);
+#if BUILDFLAG(ENABLE_AI_CHAT)
     if (seed_send_page_content_) {
       prefs->SetBoolean(
           ai_chat::prefs::kBraveAIChatTabOrganizationSendPageContent, true);
     }
+#endif  // BUILDFLAG(ENABLE_AI_CHAT)
 
     TestingProfile::Builder builder;
     builder.SetPrefService(std::move(prefs));
