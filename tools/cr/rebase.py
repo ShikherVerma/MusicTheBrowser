@@ -160,8 +160,7 @@ PINNED_GROUPS = [
                 r'Filter upstream tests as needed\.?')),
     ('dead_upstream_tests',
      re.compile(r'Remove dead upstream tests from filters\.?')),
-    ('flake_tests',
-     re.compile(r'Update lists for upstream flake tests\.?')),
+    ('flake_tests', re.compile(r'Update lists for upstream flake tests\.?')),
 ]
 
 # Subjects produced by `pnpm run update_patches` and string generation --
