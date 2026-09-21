@@ -72,7 +72,6 @@ monkey.patch_all()
 
 # pylint: disable=wrong-import-position
 import argparse
-import os
 import sys
 import time
 from collections import Counter
@@ -720,8 +719,11 @@ class SuiteUpdater:
                             encoding="utf-8",
                             newline="")
             written.add(filename)
-            self._log(f"wrote {len(entries)} entries to"
-                      f" {os.path.relpath(path, BRAVE_CORE_ROOT)}")
+            # Logged as an absolute path rather than relative to
+            # BRAVE_CORE_ROOT: relpath() raises on Windows when the two
+            # paths are on different drives, which happens in tests
+            # since they write to a temp dir.
+            self._log(f"wrote {len(entries)} entries to {path}")
         self._remove_stale_filters(written)
 
     def _remove_stale_filters(self, written: set[str]) -> None:
