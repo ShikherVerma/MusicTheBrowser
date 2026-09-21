@@ -307,9 +307,10 @@
 -UnifiedConsentServiceTest.ReplaceSync_*
 
 
-# This test fails because we override VariationsIdsProvider's method
-# GetClientDataHeaders to return nullptr, so the X-Client-Data header the test
-# expects to find is never added.
+# These tests fail because we override VariationsIdsProvider's method
+# GetClientDataHeaders to return nullptr, so the X-Client-Data header the tests
+# expect to find is never added.
+-ContextualSearchDelegateImplTest.DiscourseContextHeaderRemovedOnCrossOriginRedirect_GoogleDSE
 -LogoServiceImplTest.IncludesVariationsHeaderWhenDSEIsGoogle
 
 # Tests below this point have not been diagnosed or had issues created yet.

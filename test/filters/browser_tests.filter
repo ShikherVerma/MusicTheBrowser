@@ -495,6 +495,7 @@
 
 # These tests fail because kPrerender2 feature is disabled.
 -All/AmpPageLoadMetricsBrowserTest.*
+-All/GWSPageLoadMetricsObserverWithoutStrictSiteIsolationBrowserTest.PrewarmProcessReuseWithoutStrictSiteIsolation/*
 -All/HTTPCacheSearchPreloadUnifiedBrowserTest.BackwardHitHttpCache/*
 -All/HostedAppTestWithPrerendering.*
 -All/PrerenderPageLoadMetricsBrowserTestWithInitialWebUIParam.PrerenderingDoNotRecordUKM/*
@@ -511,6 +512,7 @@
 -ExtensionScriptTrackerBrowserTest.TrackingEnabledForPrerenderedDsePage
 -FrameNodeImplPrerenderBrowserTest.Bind_PrerenderNavigation
 -GWSPageLoadMetricsObserverBrowserTest.PrerenderSRPAndActivate
+-GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest.*
 -HoldbackSearchPreloadUnifiedBrowserTest.PrerenderDSEHoldbackTest
 -NavigationInitiatorPageLoadMetricsBrowserTest.LinkClickPrerender
 -NavigationInitiatorPageLoadMetricsBrowserTest.LinkClickPrerenderSRP
