@@ -806,6 +806,10 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
     }
 
     private void addMediaToPlaylist(PlaylistItem[] items) {
+        addMediaToPlaylist(items, /* showSnackBars= */ true);
+    }
+
+    private void addMediaToPlaylist(PlaylistItem[] items, boolean showSnackBars) {
         if (mPlaylistService == null) {
             return;
         }
@@ -829,11 +833,11 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                                 ConstantUtils.DEFAULT_PLAYLIST,
                                 true,
                                 addedItems -> {
-                                    if (addedItems.length > 0) {
+                                    if (addedItems.length > 0 && showSnackBars) {
                                         showAddedToPlaylistSnackBar();
                                     }
                                 });
-                    } else {
+                    } else if (showSnackBars) {
                         showAlreadyAddedToPlaylistSnackBar();
                     }
                 });
@@ -1711,10 +1715,9 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
         }
         if (playlistItems.length > 0 && !UrlUtilities.isNtpUrl(currentTab.getUrl().getSpec())) {
             mShouldShowPlaylistMenu = true;
-            if (ChromeSharedPreferences.getInstance()
-                    .readBoolean(BravePreferenceKeys.PREF_ADD_TO_PLAYLIST_BUTTON, true)) {
-                showPlaylistButton(playlistItems);
-            }
+            // Music Browser: played media is saved and downloaded silently,
+            // no offer button.
+            addMediaToPlaylist(playlistItems, /* showSnackBars= */ false);
         }
     }
 
