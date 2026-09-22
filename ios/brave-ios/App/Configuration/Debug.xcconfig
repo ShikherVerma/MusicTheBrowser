@@ -5,7 +5,7 @@
 #include "Base.xcconfig"
 
 // Music Browser rebrand
-MOZ_BUNDLE_DISPLAY_NAME = Music Browser
+MOZ_BUNDLE_DISPLAY_NAME = Music: The Browser
 
 BRAVE_URL_SCHEME = musicbrowser
 

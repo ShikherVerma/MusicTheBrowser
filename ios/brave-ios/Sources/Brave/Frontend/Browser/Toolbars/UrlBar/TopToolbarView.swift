@@ -318,6 +318,9 @@ class TopToolbarView: UIView, ToolbarProtocol {
 
     shieldsRewardsStack.addArrangedSubview(shieldsButton)
     shieldsRewardsStack.addArrangedSubview(rewardsButton)
+    // Music Browser: shields and rewards are gone; without this the stack
+    // still reserves ~170pt and the address bar cannot fill the row.
+    shieldsRewardsStack.isHidden = true
 
     [
       leadingItemsStackView, locationContainer, shieldsRewardsStack, trailingItemsStackView,

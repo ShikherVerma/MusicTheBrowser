@@ -43,11 +43,52 @@ class TabsButton: UIButton {
     addSubview(countLabel)
 
     // Music Browser: this button opens the music library, not the tab grid.
-    // Show a music note instead of the tab count square.
+    // Two-sided pill: globe (web) left, music note in accent circle right.
     borderView.isHidden = true
     countLabel.isHidden = true
-    setImage(UIImage(systemName: "music.note"), for: .normal)
     accessibilityLabel = "Music"
+
+    let pillView = UIView()
+    pillView.isUserInteractionEnabled = false
+    pillView.layer.borderWidth = 1.5
+    pillView.layer.borderColor = UIColor.systemGray3.cgColor
+    pillView.layer.cornerRadius = 15
+    pillView.layer.cornerCurve = .continuous
+    addSubview(pillView)
+    pillView.snp.makeConstraints {
+      $0.center.equalToSuperview()
+      $0.width.equalTo(58)
+      $0.height.equalTo(30)
+    }
+
+    let globeView = UIImageView(image: UIImage(systemName: "globe"))
+    globeView.tintColor = .systemGray
+    globeView.contentMode = .scaleAspectFit
+    pillView.addSubview(globeView)
+    globeView.snp.makeConstraints {
+      $0.leading.equalToSuperview().offset(8)
+      $0.centerY.equalToSuperview()
+      $0.width.height.equalTo(16)
+    }
+
+    let noteCircle = UIView()
+    noteCircle.backgroundColor = .systemGreen
+    noteCircle.layer.cornerRadius = 12
+    pillView.addSubview(noteCircle)
+    noteCircle.snp.makeConstraints {
+      $0.trailing.equalToSuperview().inset(3)
+      $0.centerY.equalToSuperview()
+      $0.width.height.equalTo(24)
+    }
+
+    let noteView = UIImageView(image: UIImage(systemName: "music.note"))
+    noteView.tintColor = .white
+    noteView.contentMode = .scaleAspectFit
+    noteCircle.addSubview(noteView)
+    noteView.snp.makeConstraints {
+      $0.center.equalToSuperview()
+      $0.width.height.equalTo(14)
+    }
 
     countLabel.snp.makeConstraints {
       $0.edges.equalToSuperview()
