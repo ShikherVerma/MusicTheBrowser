@@ -33,6 +33,16 @@ struct MediaContentView: View {
         .zIndex(1)
         .playlistSheetDetentAnchor(id: .mediaPlayer)
         .overlay {
+          // Music Browser: audio-first player. Cover the video surface with
+          // the item artwork so it reads as a music player; audio continues.
+          if let assetURL = URL(string: selectedItem.mediaSrc),
+            let pageURL = URL(string: selectedItem.pageSrc)
+          {
+            MediaThumbnail(assetURL: assetURL, pageURL: pageURL)
+              .allowsHitTesting(false)
+          }
+        }
+        .overlay {
           if model.isLoadingStreamingURL {
             ProgressView()
               .progressViewStyle(.circular)
