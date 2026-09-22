@@ -117,7 +117,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(
       global_privacy_control::kGlobalPrivacyControlEnabled, true);
-  registry->RegisterBooleanPref(prefs::kMediaBackgroundingEnabled, false);
+  // Music Browser: keep audio playing when backgrounded, by default.
+  registry->RegisterBooleanPref(prefs::kMediaBackgroundingEnabled, true);
   registry->RegisterBooleanPref(prefs::kBlockAllCookiesEnabled, false);
 }
 

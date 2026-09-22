@@ -297,7 +297,8 @@ extension Preferences {
     /// - Warning: You should not access this directly but  through ``backgroundMediaType``
     static let backgroundMediaTypeRaw = Option<Int>(
       key: "newtabpage.background-media-type",
-      default: BackgroundMediaType.sponsoredImages.rawValue
+      // Music Browser: no sponsored backgrounds.
+      default: BackgroundMediaType.defaultImages.rawValue
     )
 
     /// A  variable to access the ``backgroundMediaTypeRaw`` preference value

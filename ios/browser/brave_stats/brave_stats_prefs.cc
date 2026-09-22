@@ -19,7 +19,8 @@
 namespace brave_stats {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kStatsReportingEnabled, true);
+  // Music Browser: no usage pings.
+  registry->RegisterBooleanPref(kStatsReportingEnabled, false);
   registry->RegisterStringPref(kLastCheckYMD, std::string());
   registry->RegisterTimePref(serp_metrics::prefs::kLastReportedAt,
                              base::Time());

@@ -12,7 +12,8 @@ extension Preferences {
     /// If user kills the app before completing onboarding, it should be treated as unfinished.
     public static let basicOnboardingCompleted = Option<Int>(
       key: "general.basic-onboarding-completed",
-      default: OnboardingState.undetermined.rawValue
+      // Music Browser: no onboarding flow.
+      default: OnboardingState.completed.rawValue
     )
 
     /// The bool detemining if p3a infomartion is shown in onboarding to a user so they will not see it again as pop-over
@@ -43,7 +44,8 @@ extension Preferences {
     /// The Bool determining onboarding finished fully
     public static let focusOnboardingFinished = Option<Bool>(
       key: "focus.onboarding.onboarding-finished",
-      default: false
+      // Music Browser: no onboarding flow.
+      default: true
     )
   }
 }
@@ -83,7 +85,8 @@ extension Preferences {
     /// dismissed the intro screen enough amount of times.
     public static let completed = Option<Bool>(
       key: "defaultBrowserIntro.intro-completed",
-      default: false
+      // Music Browser: never push default-browser prompts.
+      default: true
     )
 
     /// Whether system notification scheduled or not
