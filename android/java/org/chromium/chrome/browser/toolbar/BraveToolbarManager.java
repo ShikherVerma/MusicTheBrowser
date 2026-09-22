@@ -554,10 +554,24 @@ public class BraveToolbarManager extends ToolbarManager
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
 
+        // Music Browser: the tab switcher button is the Music button. It opens
+        // the playlist instead of the tab grid; the tab tray is unreachable.
+        Runnable openMusicHandler =
+                () -> {
+                    try {
+                        BraveActivity.getBraveActivity()
+                                .openPlaylistActivity(
+                                        mActivity,
+                                        com.brave.playlist.util.ConstantUtils.DEFAULT_PLAYLIST);
+                    } catch (BraveActivity.BraveActivityNotFoundException e) {
+                        org.chromium.base.Log.e(TAG, "openMusicHandler " + e);
+                    }
+                };
+
         super.initializeWithNative(
                 layoutManager,
                 stripLayoutHelperManager,
-                openGridTabSwitcherHandler,
+                openMusicHandler,
                 bookmarkClickHandler,
                 customTabsBackClickHandler,
                 archivedTabCountSupplier,
@@ -567,7 +581,8 @@ public class BraveToolbarManager extends ToolbarManager
                 selectionDropdownMenuDelegate);
 
         registerHubLayoutObserver();
-        mOpenGridTabSwitcherHandler = openGridTabSwitcherHandler;
+        // Music Browser: bottom bar tab switcher opens the playlist too.
+        mOpenGridTabSwitcherHandler = openMusicHandler;
 
         // Registers the bottom bar buttons Brave adds to upstream's, alongside the ones upstream
         // registers for it in ActionUtils#registerBottomBarActions.
