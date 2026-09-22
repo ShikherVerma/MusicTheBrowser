@@ -11,11 +11,8 @@ extension PrefService {
   /// Whether or not the Brave VPN feature in general is available to use and the UI should display
   /// buttons/settings for it.
   public var isBraveVPNAvailable: Bool {
-    // Right now this feature is always available unless its managed/forced by policy
-    let isDisabledByPolicy =
-      isManagedPreference(forPath: kManagedBraveVPNDisabledPrefName)
-      && boolean(forPath: kManagedBraveVPNDisabledPrefName)
-    return !isDisabledByPolicy
+    // Music Browser: VPN hidden entirely.
+    return false
   }
 }
 

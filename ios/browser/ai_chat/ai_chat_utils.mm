@@ -21,9 +21,8 @@
 @implementation AIChatUtils
 
 + (BOOL)isAIChatEnabledForPrefService:(id<PrefServiceBridge>)prefService {
-  PrefServiceBridgeImpl* holder =
-      base::apple::ObjCCastStrict<PrefServiceBridgeImpl>(prefService);
-  return ai_chat::IsAIChatEnabled(holder.prefService);
+  // Music Browser: Leo hidden entirely.
+  return NO;
 }
 
 + (NSURL*)openLeoURLWithQuerySubmitted:(NSString*)query

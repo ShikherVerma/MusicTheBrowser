@@ -11,11 +11,8 @@ extension PrefService {
   /// Whether or not the Brave News feature in general is available to use and the UI should display
   /// buttons/settings for it.
   public var isBraveNewsAvailable: Bool {
-    // The feature is only unavailable when disabled by policy
-    let isDisabledByPolicy =
-      isManagedPreference(forPath: kBraveNewsDisabledByPolicyPrefName)
-      && boolean(forPath: kBraveNewsDisabledByPolicyPrefName)
-    return !isDisabledByPolicy
+    // Music Browser: News hidden entirely.
+    return false
   }
 }
 

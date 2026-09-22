@@ -17,12 +17,8 @@ public class BraveRewards: PreferencesObserver {
 
   /// Whether or not Brave Rewards is available/can be enabled
   public static func isSupported(prefService: any PrefService) -> Bool {
-    let isSupportedFromPrefs = BraveRewardsAPI.isSupported(prefService)
-    #if DEBUG
-    return isSupportedFromPrefs
-    #else
-    return isSupportedFromPrefs && DCDevice.current.isSupported
-    #endif
+    // Music Browser: Rewards hidden entirely.
+    return false
   }
 
   private(set) var ads: BraveAds

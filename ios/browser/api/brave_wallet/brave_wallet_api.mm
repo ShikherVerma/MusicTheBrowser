@@ -59,7 +59,8 @@ BraveWalletProviderScriptKey const BraveWalletProviderScriptKeyWalletStandard =
 }
 
 - (bool)isAllowed {
-  return brave_wallet::IsAllowed(_profile->GetPrefs());
+  // Music Browser: Wallet hidden entirely.
+  return false;
 }
 
 + (id<BraveWalletBlockchainRegistry>)blockchainRegistry {

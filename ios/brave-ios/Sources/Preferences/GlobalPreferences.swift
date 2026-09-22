@@ -26,7 +26,8 @@ extension Preferences {
   public final class Rewards {
     public static let hideRewardsIcon = Option<Bool>(
       key: "rewards.new-hide-rewards-icon",
-      default: false
+      // Music Browser: no rewards toolbar icon.
+      default: true
     )
     public static let rewardsToggledOnce = Option<Bool>(
       key: "rewards.rewards-toggled-once",
