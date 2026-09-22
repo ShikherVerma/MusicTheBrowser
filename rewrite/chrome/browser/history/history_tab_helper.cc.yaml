@@ -15,8 +15,6 @@ substitutions:
     preempt_function_impl:
       function_name: HistoryTabHelper::GetHistoryService
       code: |-
-        #if BUILDFLAG(ENABLE_REQUEST_OTR)
         if (BraveTabRequestedOffTheRecord(web_contents())) {
           return nullptr;
         }
-        #endif

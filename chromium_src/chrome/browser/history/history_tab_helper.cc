@@ -23,12 +23,16 @@
 namespace {
 
 bool BraveTabRequestedOffTheRecord(content::WebContents* web_contents) {
+#if BUILDFLAG(ENABLE_REQUEST_OTR)
   if (request_otr::RequestOTRStorageTabHelper* tab_storage =
           request_otr::RequestOTRStorageTabHelper::FromWebContents(
               web_contents)) {
     return tab_storage->has_requested_otr();
   }
   return false;
+#else
+  return false;
+#endif
 }
 
 }  // namespace
