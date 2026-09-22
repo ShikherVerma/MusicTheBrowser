@@ -49,7 +49,7 @@ namespace {
 
 constexpr size_t kCardanoScriptHashSize = 28u;
 
-bool IsDisabledByPolicy(PrefService* prefs) {
+[[maybe_unused]] bool IsDisabledByPolicy(PrefService* prefs) {
   DCHECK(prefs);
   return prefs->IsManagedPreference(kBraveWalletDisabledByPolicy) &&
          prefs->GetBoolean(kBraveWalletDisabledByPolicy);
