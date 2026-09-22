@@ -806,19 +806,16 @@ extension BrowserViewController: TabManagerDelegate {
     )
     let closeTabMenu = UIMenu(title: "", options: .displayInline, children: closeTabMenuChildren)
 
-    let tabButtonMenuActionList = [
+    _ = [
       closeTabMenu, closeAllTabMenu, recentlyClosedMenu, duplicateTabMenu, bookmarkMenu, newTabMenu,
     ]
     let addTabMenuActionList = [addTabMenu]
 
-    toolbar?.tabsButton.menu = UIMenu(title: "", identifier: nil, children: tabButtonMenuActionList)
+    // Music Browser: the tabs button is the Music button; no tab context menu.
+    toolbar?.tabsButton.menu = nil
     toolbar?.searchButton.menu = UIMenu(title: "", identifier: nil, children: addTabMenuActionList)
 
-    topToolbar.tabsButton.menu = UIMenu(
-      title: "",
-      identifier: nil,
-      children: tabButtonMenuActionList
-    )
+    topToolbar.tabsButton.menu = nil
     toolbar?.searchButton.menu = UIMenu(title: "", identifier: nil, children: addTabMenuActionList)
 
     // Update Actions for Add-Tab Button

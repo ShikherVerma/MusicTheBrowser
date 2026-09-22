@@ -42,6 +42,13 @@ class TabsButton: UIButton {
     addSubview(borderView)
     addSubview(countLabel)
 
+    // Music Browser: this button opens the music library, not the tab grid.
+    // Show a music note instead of the tab count square.
+    borderView.isHidden = true
+    countLabel.isHidden = true
+    setImage(UIImage(systemName: "music.note"), for: .normal)
+    accessibilityLabel = "Music"
+
     countLabel.snp.makeConstraints {
       $0.edges.equalToSuperview()
     }

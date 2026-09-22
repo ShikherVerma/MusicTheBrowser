@@ -32,6 +32,12 @@ import os.log
 extension BrowserViewController: TopToolbarDelegate, SearchContainerViewControllerDelegate {
 
   func showTabTray() {
+    // Music Browser: the tabs button is the Music toggle. Open the library
+    // player instead of the tab grid; the tab tray is unreachable.
+    openPlaylist(tab: tabManager.selectedTab, item: nil)
+  }
+
+  private func showTabTrayUnused() {
     if tabManager.tabsForCurrentMode.isEmpty {
       return
     }

@@ -71,7 +71,8 @@ extension Preferences {
     /// Controls how the tab bar should be shown (or not shown)
     static let tabBarVisibility = Option<Int>(
       key: "general.tab-bar-visiblity",
-      default: TabBarVisibility.always.rawValue
+      // Music Browser: single tab, no tab strip.
+      default: TabBarVisibility.never.rawValue
     )
     /// After what time unused tabs should be auto-removed at app launch.
     static let autocloseTabs = Option<Int>(
