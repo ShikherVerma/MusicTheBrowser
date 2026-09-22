@@ -167,7 +167,8 @@ class BottomToolbarView: UIView, ToolbarProtocol {
   }
 
   func updateForwardStatus(_ canGoForward: Bool) {
-    forwardButton.isHidden = !canGoForward
-    shareButton.isHidden = canGoForward
+    // Music Browser: neither button is shown.
+    forwardButton.isHidden = true
+    shareButton.isHidden = true
   }
 }
