@@ -52,42 +52,44 @@ class TabsButton: UIButton {
     pillView.isUserInteractionEnabled = false
     pillView.layer.borderWidth = 1.5
     pillView.layer.borderColor = UIColor.systemGray3.cgColor
-    pillView.layer.cornerRadius = 15
+    pillView.layer.cornerRadius = 19
     pillView.layer.cornerCurve = .continuous
     addSubview(pillView)
     pillView.snp.makeConstraints {
       $0.center.equalToSuperview()
+      $0.width.equalTo(124)
+      $0.height.equalTo(38)
+    }
+
+    // Active side while browsing: the web view.
+    let globeCircle = UIView()
+    globeCircle.backgroundColor = .systemGreen
+    globeCircle.layer.cornerRadius = 16
+    pillView.addSubview(globeCircle)
+    globeCircle.snp.makeConstraints {
+      $0.leading.equalToSuperview().inset(3)
+      $0.centerY.equalToSuperview()
       $0.width.equalTo(58)
-      $0.height.equalTo(30)
+      $0.height.equalTo(32)
     }
 
     let globeView = UIImageView(image: UIImage(systemName: "globe"))
-    globeView.tintColor = .systemGray
+    globeView.tintColor = .white
     globeView.contentMode = .scaleAspectFit
-    pillView.addSubview(globeView)
+    globeCircle.addSubview(globeView)
     globeView.snp.makeConstraints {
-      $0.leading.equalToSuperview().offset(8)
-      $0.centerY.equalToSuperview()
-      $0.width.height.equalTo(16)
-    }
-
-    let noteCircle = UIView()
-    noteCircle.backgroundColor = .systemGreen
-    noteCircle.layer.cornerRadius = 12
-    pillView.addSubview(noteCircle)
-    noteCircle.snp.makeConstraints {
-      $0.trailing.equalToSuperview().inset(3)
-      $0.centerY.equalToSuperview()
-      $0.width.height.equalTo(24)
+      $0.center.equalToSuperview()
+      $0.width.height.equalTo(20)
     }
 
     let noteView = UIImageView(image: UIImage(systemName: "music.note"))
-    noteView.tintColor = .white
+    noteView.tintColor = .systemGray
     noteView.contentMode = .scaleAspectFit
-    noteCircle.addSubview(noteView)
+    pillView.addSubview(noteView)
     noteView.snp.makeConstraints {
-      $0.center.equalToSuperview()
-      $0.width.height.equalTo(14)
+      $0.centerX.equalTo(pillView.snp.trailing).inset(32)
+      $0.centerY.equalToSuperview()
+      $0.width.height.equalTo(20)
     }
 
     countLabel.snp.makeConstraints {
