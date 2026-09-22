@@ -12,8 +12,9 @@ namespace brave_vpn {
 
 namespace features {
 
+// Music Browser: VPN hidden entirely.
 BASE_FEATURE(kBraveVPN,
-#if !BUILDFLAG(IS_LINUX)
+#if false
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

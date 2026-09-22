@@ -19,7 +19,8 @@
 
 namespace ai_chat::features {
 
-BASE_FEATURE(kAIChat, base::FEATURE_ENABLED_BY_DEFAULT);
+// Music Browser: Leo hidden entirely.
+BASE_FEATURE(kAIChat, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kAIModelsDefaultKey{
     &kAIChat, "default_model", kChatAutomaticModelKey};
 const base::FeatureParam<std::string> kAIModelsPremiumDefaultKey{

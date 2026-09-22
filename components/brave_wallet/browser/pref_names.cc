@@ -135,7 +135,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(kBraveWalletDisabledByPolicy, false);
+  // Music Browser: Wallet hidden entirely.
+  registry->RegisterBooleanPref(kBraveWalletDisabledByPolicy, true);
   registry->RegisterIntegerPref(
       kDefaultEthereumWallet,
       static_cast<int>(
