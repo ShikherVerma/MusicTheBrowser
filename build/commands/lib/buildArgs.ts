@@ -233,7 +233,8 @@ export function getBuildArgs(config: Config) {
     args.android_channel = config.channel
     if (!config.isReleaseBuild()) {
       args.android_channel = 'default'
-      args.chrome_public_manifest_package = 'com.brave.browser_default'
+      // Music Browser rebrand: own package so it installs beside Brave.
+      args.chrome_public_manifest_package = 'com.shikherverma.musicbrowser'
     } else if (config.channel === '') {
       args.android_channel = 'stable'
       args.chrome_public_manifest_package = 'com.brave.browser'

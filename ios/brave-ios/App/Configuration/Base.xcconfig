@@ -12,7 +12,8 @@ brave_version_build = 0
 
 #include "../../../../../out/ios_current_link/args.xcconfig"
 
-FRAMEWORK_BASE_BUNDLE_ID = com.brave
+// Music Browser rebrand: own id namespace so it installs beside Brave.
+FRAMEWORK_BASE_BUNDLE_ID = com.shikherverma
 BASE_BUNDLE_ID = $(FRAMEWORK_BASE_BUNDLE_ID).ios
 
 DEVELOPMENT_TEAM = KL8N8XSYF4

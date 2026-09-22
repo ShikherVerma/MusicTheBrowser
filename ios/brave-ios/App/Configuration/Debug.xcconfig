@@ -4,13 +4,15 @@
 
 #include "Base.xcconfig"
 
-MOZ_BUNDLE_DISPLAY_NAME = Brave ($(USER))
+// Music Browser rebrand
+MOZ_BUNDLE_DISPLAY_NAME = Music Browser
 
-BRAVE_URL_SCHEME = brave-debug
+BRAVE_URL_SCHEME = musicbrowser
 
-// Bundle Identifier (Same as nightly)
-MOZ_BUNDLE_ID = $(BASE_BUNDLE_ID).BrowserBeta
-BRAVE_GROUP_ID = group.$(MOZ_BUNDLE_ID).unique
+// Bundle Identifier. No .unique suffix on the group: AppInfo.swift only
+// appends .unique for the original com.brave.ios.BrowserBeta id.
+MOZ_BUNDLE_ID = $(BASE_BUNDLE_ID).musicbrowser
+BRAVE_GROUP_ID = group.$(MOZ_BUNDLE_ID)
 
 // Flag to indicate if we want to include the debug settings bundle or not
 INCLUDE_SETTINGS_BUNDLE = YES
