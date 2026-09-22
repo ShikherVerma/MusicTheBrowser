@@ -68,6 +68,10 @@ extension Preferences {
     /// The date of the last cached data cleanup for dangling playlist items
     public static let lastCacheDataCleanupDate =
       Option<Date?>(key: "playlist.lastCacheDataCleanupDate", default: nil)
+    /// Music Browser: silently add every detected media to playlist and
+    /// download it, instead of offering an add button.
+    public static let autoAddDetectedMedia =
+      Option<Bool>(key: "playlist.autoAddDetectedMedia", default: true)
     /// Whether or not shuffle mode is enabled
     public static let isShuffleEnabled =
       Option<Bool>(key: "playlist.isShuffleEnabled", default: false)

@@ -201,6 +201,17 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
     }
   }
 
+  /// Music Browser: silently add a detected media item and start its
+  /// offline download. No onboarding, no popover, no prompt.
+  func autoAddToPlaylist(tab: (any TabState)?, item: PlaylistInfo) {
+    addToPlaylist(item: item) { [weak self] didAddItem in
+      guard let self = self, didAddItem else { return }
+      DispatchQueue.main.async {
+        self.updatePlaylistURLBar(tab: tab, state: .existingItem, item: item)
+      }
+    }
+  }
+
   func openPlaylist(tab: (any TabState)?, item: PlaylistInfo?) {
     if !profileController.profile.prefs.isPlaylistAvailable {
       return

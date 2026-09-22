@@ -307,6 +307,12 @@ extension LivePlaylistWebLoader: PlaylistTabHelperDelegate {
   func showPlaylistOnboarding(tab: (any Web.TabState)?) {
     // Not handled
   }
+
+  func autoAddToPlaylist(tab: (any Web.TabState)?, item: PlaylistInfo) {
+    // This loader only resolves media for streaming; hand the item to the
+    // handler exactly like the pre-auto-add detection path did.
+    updatePlaylistURLBar(tab: tab, state: .newItem, item: item)
+  }
 }
 
 extension LivePlaylistWebLoader: TabObserver {

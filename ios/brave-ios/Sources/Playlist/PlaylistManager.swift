@@ -722,11 +722,8 @@ public class PlaylistManager: NSObject {
       return false
     }
 
-    if FeatureList.kPlaylistCacheFirstEnabled.enabled {
-      return Reachability.shared.status.connectionType == .wifi
-        || Reachability.shared.status.connectionType == .ethernet
-    }
-
+    // Music Browser: cache-first no longer restricts downloads to
+    // wifi/ethernet; the autoDownloadVideo pref (default: on) decides.
     let downloadType = PlayListDownloadType(
       rawValue: Preferences.Playlist.autoDownloadVideo.value
     )

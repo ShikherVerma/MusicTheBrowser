@@ -25,6 +25,7 @@ protocol PlaylistTabHelperDelegate: AnyObject {
   )
   func showPlaylistAlert(tab: (any TabState)?, state: PlaylistItemAddedState, item: PlaylistInfo?)
   func showPlaylistOnboarding(tab: (any TabState)?)
+  func autoAddToPlaylist(tab: (any TabState)?, item: PlaylistInfo)
 }
 
 extension TabDataValues {
@@ -120,8 +121,13 @@ class PlaylistTabHelper: NSObject, TabObserver, PlaylistTabHelperBridge {
             self.updateItem(item, detected: item.detected)
           } else if item.detected {
             // Automatic Detection
-            delegate.updatePlaylistURLBar(tab: tab, state: .newItem, item: item)
-            delegate.showPlaylistOnboarding(tab: tab)
+            if Preferences.Playlist.autoAddDetectedMedia.value {
+              // Music Browser: played media is saved, no offer step.
+              delegate.autoAddToPlaylist(tab: tab, item: item)
+            } else {
+              delegate.updatePlaylistURLBar(tab: tab, state: .newItem, item: item)
+              delegate.showPlaylistOnboarding(tab: tab)
+            }
           } else {
             // Long-Press
             delegate.showPlaylistAlert(tab: tab, state: .newItem, item: item)
