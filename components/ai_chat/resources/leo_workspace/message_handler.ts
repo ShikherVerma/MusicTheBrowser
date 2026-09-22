@@ -32,6 +32,15 @@ export function viewOrigin(origin: string): string {
     : ''
 }
 
+// chrome-untrusted://view.leo-workspace -> chrome-untrusted://leo-workspace.
+// The inverse of viewOrigin(): the parent frame a viewer page belongs to.
+export function workspaceOrigin(origin: string): string {
+  const viewerPrefix = `${kScheme}view.`
+  return origin.startsWith(viewerPrefix)
+    ? origin.replace(viewerPrefix, kScheme)
+    : ''
+}
+
 async function readFilePayload(
   root: Promise<FileSystemDirectoryHandle>,
   path: unknown,
