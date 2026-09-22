@@ -245,6 +245,7 @@ class TopToolbarView: UIView, ToolbarProtocol {
   }
 
   private(set) lazy var shieldsButton: ToolbarButton = {
+    // Music Browser: shields stay active, but the button is hidden.
     let button = ToolbarButton()
     button.setImage(UIImage(sharedNamed: "brave.logo"), for: .normal)
     button.addTarget(self, action: #selector(didTapBraveShieldsButton), for: .touchUpInside)
@@ -254,6 +255,7 @@ class TopToolbarView: UIView, ToolbarProtocol {
     button.accessibilityIdentifier = "urlBar-shieldsButton"
     button.contentHorizontalAlignment = .fill
     button.contentVerticalAlignment = .fill
+    button.isHidden = true
     return button
   }()
 

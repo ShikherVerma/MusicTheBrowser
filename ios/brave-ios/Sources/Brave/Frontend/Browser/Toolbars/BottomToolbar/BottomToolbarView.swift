@@ -35,6 +35,11 @@ class BottomToolbarView: UIView, ToolbarProtocol {
     actionButtons = [
       backButton, shareButton, forwardButton, addTabButton, searchButton, tabsButton, menuButton,
     ]
+    // Music Browser: bottom bar is back, music toggle, menu.
+    shareButton.isHidden = true
+    forwardButton.isHidden = true
+    addTabButton.isHidden = true
+    searchButton.isHidden = true
     super.init(frame: .zero)
     setupAccessibility()
 
@@ -94,8 +99,9 @@ class BottomToolbarView: UIView, ToolbarProtocol {
 
   private var isSearchButtonEnabled: Bool = false {
     didSet {
-      addTabButton.isHidden = isSearchButtonEnabled
-      searchButton.isHidden = !addTabButton.isHidden
+      // Music Browser: both stay hidden.
+      addTabButton.isHidden = true
+      searchButton.isHidden = true
     }
   }
 

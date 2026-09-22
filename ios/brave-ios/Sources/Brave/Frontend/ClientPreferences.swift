@@ -292,7 +292,8 @@ extension Preferences {
   }
   final public class NewTabPage {
     /// Whether bookmark image are enabled / shown
-    static let backgroundImages = Option<Bool>(key: "newtabpage.background-images", default: true)
+    // Music Browser: plain new tab page.
+    static let backgroundImages = Option<Bool>(key: "newtabpage.background-images", default: false)
 
     /// Determines the type of sponsored media to include in the background image rotation
     /// - Warning: You should not access this directly but  through ``backgroundMediaType``
@@ -348,7 +349,8 @@ extension Preferences {
 
     /// Tells the app whether we should show Privacy Hub in new tab page view controller
     public static let showNewTabPrivacyHub =
-      Option<Bool>(key: "newtabpage.show-newtab-privacyhub", default: true)
+      // Music Browser: no privacy hub card.
+      Option<Bool>(key: "newtabpage.show-newtab-privacyhub", default: false)
 
     /// First time when privacy hub hide action is tieggered user will be shown alert
     static let hidePrivacyHubAlertShown = Option<Bool>(
