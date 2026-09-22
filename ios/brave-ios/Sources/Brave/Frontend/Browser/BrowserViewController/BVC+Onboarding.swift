@@ -214,6 +214,11 @@ extension BrowserViewController {
   // MARK: Day 0 Focus Onboarding
 
   func presentFocusOnboarding() {
+    // Music Browser: no onboarding flow, ever.
+    if true {
+      Preferences.AppState.shouldDeferPromotedPurchase.value = false
+      return
+    }
 
     // Check user has never seen onboarding - new user
     guard Preferences.Onboarding.basicOnboardingCompleted.value == OnboardingState.unseen.rawValue

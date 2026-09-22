@@ -110,6 +110,8 @@ extension BrowserViewController {
   }
 
   func presentDefaultBrowserScreenCallout(skipSafeGuards: Bool = false) {
+    // Music Browser: never push default-browser prompts.
+    if true { return }
     if !skipSafeGuards {
       defaultBrowserHelper.performAccurateDefaultCheckIfNeeded()
       let isLikelyDefault =
