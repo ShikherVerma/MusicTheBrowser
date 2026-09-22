@@ -215,7 +215,8 @@ bool EncodeStringArrayInternal(base::span<const StringType> input,
 }  // namespace
 
 bool IsAllowed(PrefService* prefs) {
-  return !IsDisabledByPolicy(prefs);
+  // Music Browser: Wallet hidden entirely.
+  return false;
 }
 
 bool IsWalletCreated(PrefService* prefs) {

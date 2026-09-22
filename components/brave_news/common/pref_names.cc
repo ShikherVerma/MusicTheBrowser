@@ -23,8 +23,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kBraveNewsChannels);
   registry->RegisterDictionaryPref(kBraveNewsDirectFeeds);
   registry->RegisterBooleanPref(kBraveNewsOpenArticlesInNewTab, true);
-  // Music Browser: News hidden entirely.
-  registry->RegisterBooleanPref(kBraveNewsDisabledByPolicy, true);
+  registry->RegisterBooleanPref(kBraveNewsDisabledByPolicy, false);
 
   brave_news::p3a::prefs::RegisterProfileNewsMetricsPrefs(registry);
 }
