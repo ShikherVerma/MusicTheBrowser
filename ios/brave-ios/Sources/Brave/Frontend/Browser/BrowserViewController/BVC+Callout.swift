@@ -34,6 +34,8 @@ extension BrowserViewController {
   }
 
   private func presentScreenCallout(for type: FullScreenCalloutType, skipSafeGuards: Bool = false) {
+    // Music Browser: no Brave callouts or opt-in screens.
+    if true { return }
     // Check the type custom callout can be shown
     guard shouldShowCallout(calloutType: type, skipSafeGuards: skipSafeGuards) else {
       return

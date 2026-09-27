@@ -58,6 +58,11 @@ window.__firefox__.includeOnce("MediaBackgrounding", function($) {
   });
 
   let addListeners = $(function(element) {
+    // Music Browser: audio only, never a picture-in-picture video window.
+    try {
+      element.disablePictureInPicture = true;
+      element.setAttribute('disablepictureinpicture', '');
+    } catch (e) {}
     if (!element.pauseListener) {
       element.pauseListener = true;
       element.visibilityState = visibilityStateGet.call(document);
@@ -119,6 +124,8 @@ window.__firefox__.includeOnce("MediaBackgrounding", function($) {
     }
     queue.push(...mutations);
   }));
+
+  document.querySelectorAll('video').forEach(addListeners);
 
   observer.observe(document, {
     childList: true,

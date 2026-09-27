@@ -18,6 +18,8 @@ extension PrivacyReportsView {
     private func askForNotificationAuthorization() {
       let center = UNUserNotificationCenter.current()
 
+      // Music Browser: never ask for notification permission.
+      if true { return }
       center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
 
         if let error = error {

@@ -34,9 +34,9 @@ public final class PlayerModel: ObservableObject {
     playerLayer.needsDisplayOnBoundsChange = true
     playerLayer.player = player
 
-    pipController = AVPictureInPictureController(playerLayer: playerLayer)
-    // Music Browser: audio only in the background, never a video PiP window.
-    pipController?.canStartPictureInPictureAutomaticallyFromInline = false
+    // Music Browser: audio only. No picture-in-picture controller at all, so
+    // no automatic PiP on background and no PiP button in the player.
+    pipController = nil
     pipController?.delegate = pictureInPictureDelegate
 
     setupPlayerKeyPathObservation()

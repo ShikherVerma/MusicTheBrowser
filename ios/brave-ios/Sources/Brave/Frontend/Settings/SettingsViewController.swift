@@ -246,20 +246,9 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
 
   // Do not use `sections` directly to access sections/rows. Use DataSource.sections instead.
   private func makeSections() -> [Static.Section] {
-    // Music Browser: a music app, not a full browser. Keep only what a
-    // listener needs: privacy/clear data, playlist (music) settings, search
-    // engine and general basics, display, and about.
-    var features = makeFeaturesSection()
-    features.rows = features.rows.filter { row in
-      row.text == Strings.braveShieldsAndPrivacySettingsTitle
-        || row.text == Strings.PlayList.playListTitle
-    }
-    return [
-      features,
-      generalSection,
-      displaySection,
-      aboutSection,
-    ]
+    // Music Browser: App Store needs an in-app privacy policy link and the
+    // open-source licenses must be shown. Nothing else is needed.
+    return [aboutSection]
   }
 
   // MARK: - Sections
@@ -1690,15 +1679,11 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
         Row(
           text: Strings.privacyPolicy,
           selection: { [unowned self] in
-            settingsDelegate?.settingsOpenURLInNewTab(.brave.privacy)
-          },
-          accessory: .disclosureIndicator,
-          cellClass: MultilineValue1Cell.self
-        ),
-        Row(
-          text: Strings.termsOfUse,
-          selection: { [unowned self] in
-            settingsDelegate?.settingsOpenURLInNewTab(.brave.termsOfUse)
+            if let url = URL(
+              string: "https://github.com/ShikherVerma/MusicTheBrowser/blob/music-browser-v1/PRIVACY.md"
+            ) {
+              settingsDelegate?.settingsOpenURLInNewTab(url)
+            }
           },
           accessory: .disclosureIndicator,
           cellClass: MultilineValue1Cell.self

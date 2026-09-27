@@ -1118,6 +1118,14 @@ public class BrowserViewController: UIViewController {
       }
     }
 
+    // Music Browser: no P3A usage statistics.
+    if !braveCore.p3aUtils.isP3APreferenceManaged {
+      braveCore.p3aUtils.isP3AEnabled = false
+    }
+    if !braveCore.localState.isManagedPreference(forPath: kMetricsReportingEnabled) {
+      braveCore.localState.set(false, forPath: kMetricsReportingEnabled)
+    }
+
     // Schedule Default Browser Local Notification
     // If notification is not already scheduled or
     // an external URL opened in Brave (which indicates Brave is set as default)
@@ -1442,6 +1450,8 @@ public class BrowserViewController: UIViewController {
   }
 
   private func presentCrashReporterCalloutIfNeeded() {
+    // Music Browser: crash reporting stays off; never ask.
+    if true { return }
     if braveCore.localState.boolean(forPath: kMetricsReportingEnabled)
       || Preferences.General.crashReportingOptInShown.value
     {

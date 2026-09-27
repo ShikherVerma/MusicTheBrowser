@@ -187,6 +187,9 @@ extension BrowserViewController {
       .map { .init(id: $0, attributes: .disabled) }
     actions.append(contentsOf: pageActivities)
     actions.append(contentsOf: remainingPageActivities)
+    // Music Browser: a music app's menu, not a full browser menu.
+    let musicBrowserActions: Set<Action.Identifier> = [.history, .share, .toggleNightMode]
+    actions = actions.filter { musicBrowserActions.contains($0.id) }
     let browserMenu = BrowserMenuController(
       actions: actions,
       handlePresentation: { [unowned self] action in

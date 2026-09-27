@@ -97,6 +97,8 @@ public class DAU {
   /// Sends ping to server and returns a boolean whether a timer for the server call was scheduled.
   /// A user needs to be active for a certain amount of time before we ping the server.
   @discardableResult public func sendPingToServer() -> Bool {
+    // Music Browser: no usage pings.
+    if true { return false }
     defer {
       // Usage ping histograms are recorded reguardless of DAU ping pref, controlled by P3A
       UmaHistogramBoolean("Brave.Core.UsageMonthly", true)
@@ -127,6 +129,8 @@ public class DAU {
   }
 
   @objc private func sendPingToServerInternal() {
+    // Music Browser: no usage pings.
+    if true { return }
     guard let stats = braveCoreStats, stats.isStatsReportingEnabled else {
       Logger.module.debug("DAU ping disabled by the user.")
       return

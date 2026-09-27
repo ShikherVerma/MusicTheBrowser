@@ -41,6 +41,7 @@ class LivePlaylistWebLoader: UIView, PlaylistWebLoader {
         $0.preferences = WKPreferences()
         $0.preferences.javaScriptCanOpenWindowsAutomatically = false
         $0.allowsInlineMediaPlayback = true
+        $0.allowsPictureInPictureMediaPlayback = false  // Music Browser
         $0.ignoresViewportScaleLimits = true
       }
     }
