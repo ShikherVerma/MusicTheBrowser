@@ -246,48 +246,20 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
 
   // Do not use `sections` directly to access sections/rows. Use DataSource.sections instead.
   private func makeSections() -> [Static.Section] {
-    var list = [
-      defaultBrowserSection,
-      makeFeaturesSection(),
+    // Music Browser: a music app, not a full browser. Keep only what a
+    // listener needs: privacy/clear data, playlist (music) settings, search
+    // engine and general basics, display, and about.
+    var features = makeFeaturesSection()
+    features.rows = features.rows.filter { row in
+      row.text == Strings.braveShieldsAndPrivacySettingsTitle
+        || row.text == Strings.PlayList.playListTitle
+    }
+    return [
+      features,
       generalSection,
       displaySection,
-      tabsSection,
-      autofillSection,
-      supportSection,
       aboutSection,
     ]
-
-    if IsBraveAccountEnabled(), let braveAccountSection {
-      list.insert(braveAccountSection, at: 1)
-    }
-
-    let shouldShowVPNSection = { () -> Bool in
-      if !braveCore.profile.prefs.isBraveVPNAvailable {
-        return false
-      }
-
-      if !BraveVPNProductInfo.isComplete || Preferences.VPN.vpnSettingHeaderWasDismissed.value {
-        return false
-      }
-
-      switch BraveVPN.vpnState {
-      case .notPurchased, .expired:
-        return true
-      case .purchased:
-        return false
-      }
-    }()
-
-    if shouldShowVPNSection {
-      list.insert(enableBraveVPNSection, at: 0)
-    }
-
-    // Always show debug section in local builds and show if previously shown
-    if !AppConstants.isOfficialBuild || Preferences.Debug.developerOptionsEnabled.value {
-      list.append(debugSection)
-    }
-
-    return list
   }
 
   // MARK: - Sections

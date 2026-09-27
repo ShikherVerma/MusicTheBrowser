@@ -104,6 +104,9 @@ public struct PrivacyReportsManager {
   public static let notificationID = "privacy-report-weekly-notification"
 
   public static func scheduleNotification(debugMode: Bool) {
+    // Music Browser: no weekly privacy report notifications.
+    cancelNotification()
+    if true { return }
     let notificationCenter = UNUserNotificationCenter.current()
 
     if debugMode {

@@ -1205,6 +1205,9 @@ public class BrowserViewController: UIViewController {
   public static let defaultBrowserNotificationId = "defaultBrowserNotification"
 
   private func scheduleDefaultBrowserNotification() {
+    // Music Browser: no notification permission prompts or reminders.
+    Self.cancelScheduleDefaultBrowserNotification()
+    if true { return }
     if BraveOriginServiceFactory.get(profile: profileController.profile)?.isPurchased() == true {
       Self.cancelScheduleDefaultBrowserNotification()
       return

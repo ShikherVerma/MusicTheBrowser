@@ -34,6 +34,9 @@ public class BraveVPN {
   /// Initialize the vpn service. It should be called even if the user hasn't bought the vpn yet.
   /// This function can have side effects if the receipt has expired(removes the vpn connection then).
   public static func initialize(customCredential: BraveVPNSkusCredential?) {
+    // Music Browser: no VPN. Initializing touches the system VPN
+    // configuration and can trigger iOS VPN permission prompts.
+    if true { return }
     @Sendable func clearConfiguration() {
       GRDVPNHelper.clearVPNConfiguration()
       clearCredentials()
