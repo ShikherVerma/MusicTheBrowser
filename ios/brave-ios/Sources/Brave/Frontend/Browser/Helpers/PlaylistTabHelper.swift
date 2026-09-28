@@ -122,8 +122,13 @@ class PlaylistTabHelper: NSObject, TabObserver, PlaylistTabHelperBridge {
           } else if item.detected {
             // Automatic Detection
             if Preferences.Playlist.autoAddDetectedMedia.value {
-              // Music Browser: played media is saved, no offer step.
-              delegate.autoAddToPlaylist(tab: tab, item: item)
+              // Music Browser: played media is saved, no offer step. Skip
+              // media already saved under another page URL.
+              if PlaylistItem.itemExists(mediaSrc: item.src) {
+                delegate.updatePlaylistURLBar(tab: tab, state: .existingItem, item: item)
+              } else {
+                delegate.autoAddToPlaylist(tab: tab, item: item)
+              }
             } else {
               delegate.updatePlaylistURLBar(tab: tab, state: .newItem, item: item)
               delegate.showPlaylistOnboarding(tab: tab)

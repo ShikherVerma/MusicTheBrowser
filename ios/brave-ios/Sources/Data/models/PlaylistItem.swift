@@ -365,6 +365,19 @@ final public class PlaylistItem: NSManagedObject, CRUD, Identifiable {
     return false
   }
 
+  /// Music Browser: the same media can surface under several page URLs
+  /// (e.g. a site rewriting the address per track), so auto-save also
+  /// dedupes on the media URL.
+  public static func itemExists(mediaSrc: String) -> Bool {
+    if mediaSrc.isEmpty { return false }
+    if let count = PlaylistItem.count(predicate: NSPredicate(format: "mediaSrc == %@", mediaSrc)),
+      count > 0
+    {
+      return true
+    }
+    return false
+  }
+
   public static func itemExists(uuid: String) -> Bool {
     if let count = PlaylistItem.count(predicate: NSPredicate(format: "uuid == %@", uuid)), count > 0
     {
