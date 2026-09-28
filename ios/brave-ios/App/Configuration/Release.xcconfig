@@ -4,10 +4,13 @@
 
 #include "Base.xcconfig"
 
-MOZ_BUNDLE_DISPLAY_NAME = Brave
+// Music Browser rebrand (same identity as Debug.xcconfig)
+MOZ_BUNDLE_DISPLAY_NAME = Music: The Browser
+
+BRAVE_URL_SCHEME = musicbrowser
 
 // Bundle Identifier
-MOZ_BUNDLE_ID = $(BASE_BUNDLE_ID).browser
+MOZ_BUNDLE_ID = $(BASE_BUNDLE_ID).musicbrowser
 BRAVE_GROUP_ID = group.$(MOZ_BUNDLE_ID)
 
 // Flag to indicate if we want to include the debug settings bundle or not

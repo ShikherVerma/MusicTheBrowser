@@ -319,9 +319,8 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
     }
 
     Task { @MainActor [self] in
-      let shouldWarnAboutStorage =
-        await PlaylistManager.shared.isDiskSpaceEncumberedAfterReclamation()
-        && !BrowserViewController.didShowStorageFullWarning
+      // Music Browser: auto-save never prompts; everything played is saved.
+      let shouldWarnAboutStorage = false
 
       if shouldWarnAboutStorage, self.view.window != nil {
         BrowserViewController.didShowStorageFullWarning = true

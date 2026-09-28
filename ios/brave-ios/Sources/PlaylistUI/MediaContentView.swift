@@ -38,8 +38,11 @@ struct MediaContentView: View {
           if let assetURL = URL(string: selectedItem.mediaSrc),
             let pageURL = URL(string: selectedItem.pageSrc)
           {
-            MediaThumbnail(assetURL: assetURL, pageURL: pageURL)
-              .allowsHitTesting(false)
+            ZStack {
+              MusicBrowserArtworkPlaceholder()
+              MediaThumbnail(assetURL: assetURL, pageURL: pageURL)
+            }
+            .allowsHitTesting(false)
           }
         }
         .overlay {
@@ -379,3 +382,23 @@ extension MediaContentView {
   .environment(\.colorScheme, .dark)
 }
 #endif
+
+/// Music Browser: sits behind the artwork so items without a thumbnail still
+/// look like music rather than an empty black video surface.
+private struct MusicBrowserArtworkPlaceholder: View {
+  var body: some View {
+    LinearGradient(
+      colors: [
+        Color(red: 0.16, green: 0.17, blue: 0.20),
+        Color(red: 0.06, green: 0.06, blue: 0.08),
+      ],
+      startPoint: .top,
+      endPoint: .bottom
+    )
+    .overlay {
+      Image(systemName: "music.note")
+        .font(.system(size: 72, weight: .regular))
+        .foregroundStyle(Color(red: 0.12, green: 0.61, blue: 1.0))
+    }
+  }
+}
