@@ -61,7 +61,8 @@ struct MediaThumbnail: View {
   var pageURL: URL
 
   var body: some View {
-    Color.clear
+    // Music Browser: music-note placeholder under the artwork.
+    MusicBrowserArtworkPlaceholder()
       .overlay {
         if let image = thumbnailLoader.image {
           Image(uiImage: image)

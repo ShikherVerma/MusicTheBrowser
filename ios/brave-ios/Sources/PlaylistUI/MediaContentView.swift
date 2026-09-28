@@ -385,8 +385,18 @@ extension MediaContentView {
 
 /// Music Browser: sits behind the artwork so items without a thumbnail still
 /// look like music rather than an empty black video surface.
-private struct MusicBrowserArtworkPlaceholder: View {
+struct MusicBrowserArtworkPlaceholder: View {
   var body: some View {
+    GeometryReader { proxy in
+      gradient.overlay {
+        Image(systemName: "music.note")
+          .font(.system(size: min(proxy.size.width, proxy.size.height) * 0.4))
+          .foregroundStyle(Color(red: 0.12, green: 0.61, blue: 1.0))
+      }
+    }
+  }
+
+  private var gradient: some View {
     LinearGradient(
       colors: [
         Color(red: 0.16, green: 0.17, blue: 0.20),
@@ -395,10 +405,5 @@ private struct MusicBrowserArtworkPlaceholder: View {
       startPoint: .top,
       endPoint: .bottom
     )
-    .overlay {
-      Image(systemName: "music.note")
-        .font(.system(size: 72, weight: .regular))
-        .foregroundStyle(Color(red: 0.12, green: 0.61, blue: 1.0))
-    }
   }
 }
