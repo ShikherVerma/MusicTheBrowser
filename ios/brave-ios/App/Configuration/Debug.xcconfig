@@ -27,3 +27,8 @@ OTHER_SWIFT_FLAGS=$(brave_ios_debug_prefix_map_flag)
 ENABLE_TESTABILITY = YES
 
 GCC_PREPROCESSOR_DEFINITIONS= DEBUG=1
+
+// Music Browser version (overrides the Brave version from args.xcconfig).
+// Bump brave_version_build for every App Store upload.
+brave_ios_marketing_version = 1.0
+brave_version_build = 1

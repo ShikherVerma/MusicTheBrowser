@@ -17,3 +17,8 @@ BRAVE_GROUP_ID = group.$(MOZ_BUNDLE_ID)
 INCLUDE_SETTINGS_BUNDLE = NO
 
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = BRAVE_CHANNEL_RELEASE $(brave_swift_active_compliation_conditions)
+
+// Music Browser version (overrides the Brave version from args.xcconfig).
+// Bump brave_version_build for every App Store upload.
+brave_ios_marketing_version = 1.0
+brave_version_build = 1
