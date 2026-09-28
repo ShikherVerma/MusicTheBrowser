@@ -14,8 +14,9 @@ namespace features {
 BASE_FEATURE(kBraveBackgroundVideoPlayback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Music Browser: audio only, no picture-in-picture.
 BASE_FEATURE(kBravePictureInPictureForYouTubeVideos,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBraveYoutubeFullscreenSettingsWorkaround,
              base::FEATURE_DISABLED_BY_DEFAULT);

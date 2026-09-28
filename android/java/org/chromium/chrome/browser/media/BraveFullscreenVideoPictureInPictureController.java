@@ -52,6 +52,9 @@ public class BraveFullscreenVideoPictureInPictureController {
             final WebContents webContents,
             final PictureInPictureParams.Builder builder,
             @Nullable final Rect bounds) {
+        // Music Browser: audio only; never enter picture-in-picture. Returning
+        // true marks the attempt handled so upstream's own entry is skipped.
+        if (true) return true;
         onYouTubePictureInPictureAttempt(activity, webContents);
         try {
             if (!activity.enterPictureInPictureMode(builder.build())) {

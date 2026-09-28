@@ -55,6 +55,8 @@ public class BraveYouTubeScriptInjectorNativeHelper {
             if (!PictureInPicture.isEnabled(activity)) {
                 return;
             }
+            // Music Browser: audio only; never enter picture-in-picture.
+            if (true) return;
             if (activity instanceof final BraveActivity braveActivity) {
                 // Resume the media session when the transition completes.
                 braveActivity.onYouTubePictureInPictureRequested(webContents);
