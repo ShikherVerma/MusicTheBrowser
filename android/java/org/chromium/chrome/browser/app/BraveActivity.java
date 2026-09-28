@@ -1407,7 +1407,10 @@ public abstract class BraveActivity extends ChromeActivity
 
         BraveSyncAccountDeletedInformer.show();
 
-        if (!OnboardingPrefManager.getInstance().isOneTimeNotificationStarted() && isFirstInstall) {
+        // Music Browser: no retention notifications.
+        if (false
+                && !OnboardingPrefManager.getInstance().isOneTimeNotificationStarted()
+                && isFirstInstall) {
             RetentionNotificationUtil.scheduleNotification(this, RetentionNotificationUtil.HOUR_3);
             RetentionNotificationUtil.scheduleNotification(this, RetentionNotificationUtil.HOUR_24);
             RetentionNotificationUtil.scheduleNotification(this, RetentionNotificationUtil.DAY_6);
@@ -1464,7 +1467,9 @@ public abstract class BraveActivity extends ChromeActivity
                         }
                     });
         }
-        if (isFirstInstall
+        // Music Browser: no dormant-user notifications.
+        if (false
+                && isFirstInstall
                 && (OnboardingPrefManager.getInstance().isDormantUsersEngagementEnabled()
                         || getPackageName().equals(BraveConstants.BRAVE_PRODUCTION_PACKAGE_NAME))) {
             OnboardingPrefManager.getInstance().setDormantUsersPrefs();

@@ -387,8 +387,9 @@ public class WelcomeOnboardingActivity extends FirstRunActivityBase
     private boolean getCrashReportingPreference() {
         if (PackageUtils.isFirstInstall(this)
                 && !OnboardingPrefManager.getInstance().isP3aCrashReportingMessageShown()) {
-            setMetricsReportingConsent(true, true);
-            return true;
+            // Music Browser: crash reporting is opt-in, off by default.
+            setMetricsReportingConsent(false, true);
+            return false;
         }
 
         boolean isCrashReporting = false;
@@ -403,7 +404,12 @@ public class WelcomeOnboardingActivity extends FirstRunActivityBase
     }
 
     private boolean getP3aPreference() {
-        boolean isP3aEnabled = true;
+        // Music Browser: product analytics are opt-in, off by default.
+        if (PackageUtils.isFirstInstall(this)) {
+            setP3aConsent(false);
+            return false;
+        }
+        boolean isP3aEnabled = false;
         try {
             isP3aEnabled = BraveLocalState.get().getBoolean(BravePref.P3A_ENABLED);
         } catch (Exception e) {
