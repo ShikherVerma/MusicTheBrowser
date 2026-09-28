@@ -175,7 +175,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // map, referrals service, SERP tab helper, Brave Origin service) that
   // remain compiled in even when the stats updater itself is excluded, so
   // it must always be registered.
-  registry->RegisterBooleanPref(kStatsReportingEnabled, true);
+  // Music Browser: no usage stats ping by default.
+  registry->RegisterBooleanPref(kStatsReportingEnabled, false);
 #if BUILDFLAG(ENABLE_BRAVE_STATS_UPDATER)
   brave_stats::RegisterLocalStatePrefs(registry);
 #endif
