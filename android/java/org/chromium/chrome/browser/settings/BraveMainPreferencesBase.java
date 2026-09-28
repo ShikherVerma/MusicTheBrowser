@@ -276,6 +276,21 @@ public abstract class BraveMainPreferencesBase extends BravePreferenceFragment
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             removePreferenceIfPresent(PREF_BACKGROUND_IMAGES);
         }
+
+        // Music Browser: a music app needs no browser settings. Keep only
+        // About (version, legal information and open-source licenses).
+        java.util.List<String> musicBrowserRemove = new java.util.ArrayList<>();
+        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++) {
+            String key = getPreferenceScreen().getPreference(i).getKey();
+            if (key != null
+                    && !key.equals(PREF_ABOUT_SECTION)
+                    && !key.equals(PREF_ABOUT_CHROME)) {
+                musicBrowserRemove.add(key);
+            }
+        }
+        for (String key : musicBrowserRemove) {
+            removePreferenceIfPresent(key);
+        }
     }
 
     private void prepareBravePreferences() {
