@@ -231,11 +231,13 @@ export function getBuildArgs(config: Config) {
 
   if (config.targetOS === 'android') {
     args.android_channel = config.channel
-    if (!config.isReleaseBuild()) {
+    if (!config.isReleaseBuild() || config.channel === '') {
+      // Music Browser rebrand: Debug and Release both use the 'default'
+      // channel (our name and icons live in res_brave_default_base) and
+      // our own package, so it installs beside Brave.
       args.android_channel = 'default'
-      // Music Browser rebrand: own package so it installs beside Brave.
       args.chrome_public_manifest_package = 'com.shikherverma.musicbrowser'
-    } else if (config.channel === '') {
+    } else if (config.channel === 'brave-stable') {
       args.android_channel = 'stable'
       args.chrome_public_manifest_package = 'com.brave.browser'
     } else if (config.channel === 'beta') {
