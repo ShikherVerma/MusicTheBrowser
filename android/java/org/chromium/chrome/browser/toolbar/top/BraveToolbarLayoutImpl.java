@@ -817,14 +817,22 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                 ConstantUtils.DEFAULT_PLAYLIST,
                 defaultPlaylist -> {
                     Set<String> pageSources = new HashSet<String>();
+                    // Music Browser: the same media can show up under several page
+                    // URLs (sites rewriting the address per track), so also dedupe
+                    // on the media URL.
+                    Set<String> mediaSources = new HashSet<String>();
                     for (PlaylistItem defaultPlaylistItem : defaultPlaylist.items) {
                         pageSources.add(defaultPlaylistItem.pageSource.url);
+                        mediaSources.add(defaultPlaylistItem.mediaSource.url);
                     }
                     List<PlaylistItem> playlistItems = new ArrayList<>();
                     for (PlaylistItem playlistItem : items) {
                         // Check for duplicates in default playlist
-                        if (!pageSources.contains(playlistItem.pageSource.url)) {
+                        String mediaUrl = playlistItem.mediaSource.url;
+                        if (!pageSources.contains(playlistItem.pageSource.url)
+                                && (mediaUrl.isEmpty() || !mediaSources.contains(mediaUrl))) {
                             playlistItems.add(playlistItem);
+                            mediaSources.add(mediaUrl);
                         }
                     }
                     if (playlistItems.size() > 0) {
