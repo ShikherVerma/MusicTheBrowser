@@ -987,6 +987,23 @@ public class BraveTabbedAppMenuPropertiesDelegate extends TabbedAppMenuPropertie
         // Customize menu item visibility.
         CustomizeBraveMenu.applyCustomization(mContext.getResources(), modelList);
 
+        // Music Browser: a music app's menu, not a full browser menu.
+        if (menuGroup == MenuGroup.PAGE_MENU) {
+            List<Integer> musicBrowserKeep =
+                    Arrays.asList(
+                            R.id.brave_playlist_id,
+                            R.id.open_history_menu_id,
+                            R.id.share_menu_id,
+                            R.id.preferences_id,
+                            R.id.exit_id);
+            for (int i = modelList.size() - 1; i >= 0; i--) {
+                int id = modelList.get(i).model.get(AppMenuItemProperties.MENU_ITEM_ID);
+                if (!musicBrowserKeep.contains(id)) {
+                    modelList.removeAt(i);
+                }
+            }
+        }
+
         return modelList;
     }
 
