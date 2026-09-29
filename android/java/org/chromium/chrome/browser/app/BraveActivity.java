@@ -1408,7 +1408,7 @@ public abstract class BraveActivity extends ChromeActivity
         BraveSyncAccountDeletedInformer.show();
 
         // Music Browser: no retention notifications.
-        if (false
+        if (musicBrowserEngagementNotifications()
                 && !OnboardingPrefManager.getInstance().isOneTimeNotificationStarted()
                 && isFirstInstall) {
             RetentionNotificationUtil.scheduleNotification(this, RetentionNotificationUtil.HOUR_3);
@@ -1468,7 +1468,7 @@ public abstract class BraveActivity extends ChromeActivity
                     });
         }
         // Music Browser: no dormant-user notifications.
-        if (false
+        if (musicBrowserEngagementNotifications()
                 && isFirstInstall
                 && (OnboardingPrefManager.getInstance().isDormantUsersEngagementEnabled()
                         || getPackageName().equals(BraveConstants.BRAVE_PRODUCTION_PACKAGE_NAME))) {
@@ -1848,6 +1848,11 @@ public abstract class BraveActivity extends ChromeActivity
         if (mNewTabPageManager != null) {
             mNewTabPageManager.focusSearchBox(false, AutocompleteRequestType.SEARCH, false, null);
         }
+    }
+
+    // Music Browser: retention and dormant-user notifications stay off.
+    private static boolean musicBrowserEngagementNotifications() {
+        return false;
     }
 
     private void checkFingerPrintingOnUpgrade(boolean isFirstInstall) {

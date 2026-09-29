@@ -756,6 +756,8 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
         }
     }
 
+    // Music Browser: media is auto-saved instead of offering this button.
+    @SuppressWarnings("UnusedMethod")
     private void showPlaylistButton(PlaylistItem[] items) {
         try {
             ViewGroup viewGroup =
