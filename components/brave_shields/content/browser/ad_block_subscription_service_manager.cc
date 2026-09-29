@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_value_converter.h"
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -559,6 +560,7 @@ void AdBlockSubscriptionServiceManager::OnSubscriptionDownloaded(
     return;
   }
 
+  VLOG(1) << "Filter list subscription downloaded: " << sub_url;
   info->last_update_attempt = base::Time::Now();
   info->last_successful_update_attempt = info->last_update_attempt;
   UpdateSubscriptionPrefs(sub_url, *info);
@@ -580,6 +582,7 @@ void AdBlockSubscriptionServiceManager::OnSubscriptionDownloadFailure(
     return;
   }
 
+  VLOG(1) << "Filter list subscription download failed: " << sub_url;
   info->last_update_attempt = base::Time::Now();
   UpdateSubscriptionPrefs(sub_url, *info);
 

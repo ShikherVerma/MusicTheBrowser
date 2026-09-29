@@ -131,7 +131,9 @@ class ComponentProvidersGate : public AdBlockFiltersProvider {
   std::string GetNameForDebugging() override {
     return "ComponentProvidersGate";
   }
-  bool IsInitialized() const override { return initialized_; }
+  // Music Browser: the component catalog never arrives (no Brave services
+  // key), so never gate the engines on it.
+  bool IsInitialized() const override { return true; }
 
  private:
   bool initialized_ = false;

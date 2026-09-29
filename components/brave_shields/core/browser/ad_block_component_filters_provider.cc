@@ -121,7 +121,10 @@ void AdBlockComponentFiltersProvider::OnComponentReady(
 }
 
 bool AdBlockComponentFiltersProvider::IsInitialized() const {
-  return !component_path_.empty();
+  // Music Browser: Brave's components never arrive without Brave's services
+  // key, so a missing component must not hold back engines that also carry
+  // the public list subscriptions. LoadFilterSet() is a no-op until then.
+  return true;
 }
 
 base::FilePath AdBlockComponentFiltersProvider::GetFilterSetPath() {
