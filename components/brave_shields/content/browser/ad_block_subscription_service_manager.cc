@@ -100,6 +100,45 @@ SubscriptionInfo BuildInfoFromDict(const GURL& sub_url,
 const base::FilePath::CharType kSubscriptionsDir[] =
     FILE_PATH_LITERAL("FilterListSubscriptionCache");
 
+// Music Browser: Brave's own filter lists arrive through Brave's component
+// updater, which needs Brave's services key, so this fork never gets them.
+// Instead, subscribe to the public sources behind Brave's default lists
+// (adblock-resources filter_lists/list_catalog.json: default adblock,
+// privacy, first-party, cookie notices, mobile app promos). They download
+// straight from their hosts and refresh like any custom subscription.
+constexpr const char* kMusicBrowserDefaultLists[] = {
+    "https://easylist.to/easylist/easylist.txt",
+    "https://easylist.to/easylist/easyprivacy.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "filters.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "filters-general.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "badware.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "privacy.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "resource-abuse.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "unbreak.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "quick-fixes.txt",
+    "https://raw.githubusercontent.com/brave/adblock-lists/master/"
+    "brave-unbreak.txt",
+    "https://raw.githubusercontent.com/brave/adblock-lists/master/brave-lists/"
+    "brave-specific.txt",
+    "https://raw.githubusercontent.com/brave/adblock-lists/master/brave-lists/"
+    "brave-unbreak.txt",
+    "https://raw.githubusercontent.com/brave/adblock-lists/master/brave-lists/"
+    "brave-android-specific.txt",
+    "https://raw.githubusercontent.com/brave/adblock-lists/master/brave-lists/"
+    "brave-firstparty.txt",
+    "https://secure.fanboy.co.nz/fanboy-cookiemonster_ubo.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/"
+    "annoyances-cookies.txt",
+    "https://secure.fanboy.co.nz/fanboy-mobile-notifications.txt",
+};
+
 }  // namespace
 
 SubscriptionInfo::SubscriptionInfo() = default;
@@ -345,6 +384,13 @@ void AdBlockSubscriptionServiceManager::OnGetDownloadManager(
 
   download_manager_->CancelAllPendingDownloads();
   LoadSubscriptionServices();
+
+  // Music Browser: first run starts with the default public lists.
+  if (subscriptions_.empty()) {
+    for (const char* list_url : kMusicBrowserDefaultLists) {
+      CreateSubscription(GURL(list_url));
+    }
+  }
 
   subscription_update_timer_->Schedule(
       kListCheckInitialDelay, kListRetryInterval,

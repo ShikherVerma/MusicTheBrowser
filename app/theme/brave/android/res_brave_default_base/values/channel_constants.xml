@@ -5,8 +5,8 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- The application name displayed to the user. -->
-    <string name="app_name" translatable="false">Music Browser</string>
-    <string name="bookmark_widget_title" translatable="false">Music Browser bookmarks</string>
-    <string name="search_widget_title" translatable="false">Music Browser search</string>
-    <string name="quick_action_search_widget_title" translatable="false">Music Browser quick action search</string>
+    <string name="app_name" translatable="false">Music The Browser</string>
+    <string name="bookmark_widget_title" translatable="false">Music The Browser bookmarks</string>
+    <string name="search_widget_title" translatable="false">Music The Browser search</string>
+    <string name="quick_action_search_widget_title" translatable="false">Music The Browser quick action search</string>
 </resources>
