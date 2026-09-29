@@ -5,6 +5,8 @@
 
 #include "brave/components/playlist/content/browser/media_detector_component_manager.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -14,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "brave/components/playlist/content/browser/media_detector_component_installer.h"
 #include "components/grit/brave_components_resources.h"
@@ -49,6 +52,37 @@ const ScriptToSchemefulSiteMap& GetScriptNameToSchemefulSiteMap() {
   return *kScriptNameToSchemefulSites;
 }
 
+// Music Browser: players such as archive.org's keep their <video>/<audio> in
+// an open shadow root, where document.querySelectorAll() cannot see them. The
+// detector script evaluates to a function; running it inside a block that
+// shadows `document` with a proxy whose querySelectorAll() also searches open
+// shadow roots keeps the upstream script untouched (the block's completion
+// value is still that function).
+std::string WithShadowDomSearch(std::string_view detector_script) {
+  static constexpr char kPrefix[] = R"JS({
+const mbRealDocument = window.document;
+const mbDeepQuerySelectorAll = (root, selector) => {
+  const found = [...root.querySelectorAll(selector)];
+  for (const el of root.querySelectorAll('*')) {
+    if (el.shadowRoot) {
+      found.push(...mbDeepQuerySelectorAll(el.shadowRoot, selector));
+    }
+  }
+  return found;
+};
+const document = new Proxy(mbRealDocument, {
+  get(target, prop) {
+    if (prop === 'querySelectorAll') {
+      return (selector) => mbDeepQuerySelectorAll(target, selector);
+    }
+    const value = Reflect.get(target, prop);
+    return typeof value === 'function' ? value.bind(target) : value;
+  }
+});
+)JS";
+  return base::StrCat({kPrefix, detector_script, "\n}"});
+}
+
 base::flat_map<ScriptName, std::string> GetLocalScriptMap() {
   const auto& rb = ui::ResourceBundle::GetSharedInstance();
   return {
@@ -56,7 +90,8 @@ base::flat_map<ScriptName, std::string> GetLocalScriptMap() {
        std::string(rb.LoadDataResourceString(
            IDR_PLAYLIST_MEDIA_SOURCE_API_SUPPRESSOR_JS))},
       {GetBaseScriptName(),
-       std::string(rb.LoadDataResourceString(IDR_PLAYLIST_MEDIA_DETECTOR_JS))},
+       WithShadowDomSearch(
+           rb.LoadDataResourceString(IDR_PLAYLIST_MEDIA_DETECTOR_JS))},
       {FILE_PATH_LITERAL("youtube.com.js"),
        std::string(
            rb.LoadDataResourceString(IDR_PLAYLIST_MEDIA_DETECTOR_YOUTUBE_JS))},
