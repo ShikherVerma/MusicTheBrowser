@@ -441,7 +441,9 @@ const update = () => {
     if (config.channel === 'development') {
       androidIconSet = 'res_brave_default'
     } else if (config.channel === '') {
-      androidIconSet = 'res_brave'
+      // Music Browser: Release uses our name and icons too (same set as
+      // development/Debug builds).
+      androidIconSet = 'res_brave_default'
     } else if (config.channel === 'beta') {
       androidIconSet = 'res_brave_beta'
     } else if (config.channel === 'dev') {

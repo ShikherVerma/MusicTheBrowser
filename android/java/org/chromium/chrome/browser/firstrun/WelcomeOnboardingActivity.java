@@ -284,6 +284,8 @@ public class WelcomeOnboardingActivity extends FirstRunActivityBase
         mOnboardingPager.setAdapter(mStepAdapter);
 
         mBraveSplash = findViewById(R.id.brave_splash);
+        // Music Browser: no Brave splash; first run skips straight to the browser.
+        mBraveSplash.setVisibility(View.INVISIBLE);
         // Only the wide layout (tablets in any orientation and phones in landscape) declares the
         // splash container, and it is what tells the two splash treatments apart.
         mBraveSplashContainer = findViewById(R.id.brave_splash_container);
@@ -300,6 +302,20 @@ public class WelcomeOnboardingActivity extends FirstRunActivityBase
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
+
+        // Music Browser: no onboarding pages and no default-browser prompt.
+        // Record crash reports and product insights as off, then finish first run.
+        if (PrivacyPreferencesManagerImpl.getInstance()
+                .isUsageAndCrashReportingPermittedByPolicy()) {
+            setMetricsReportingConsent(false, true);
+        }
+        if (!BraveLocalState.get().isManagedPreference(BravePref.P3A_ENABLED)) {
+            setP3aConsent(false);
+        }
+        if (musicBrowserSkipOnboarding()) {
+            finalStep();
+            return;
+        }
 
         mIsP3aManaged = BraveLocalState.get().isManagedPreference(BravePref.P3A_ENABLED);
         mIsCrashReportingManaged =
@@ -554,6 +570,10 @@ public class WelcomeOnboardingActivity extends FirstRunActivityBase
                             }
                         })
                 .start();
+    }
+
+    private static boolean musicBrowserSkipOnboarding() {
+        return true;
     }
 
     private void maybeRequestDefaultBrowser() {
