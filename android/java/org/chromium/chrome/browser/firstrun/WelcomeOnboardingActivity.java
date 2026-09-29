@@ -178,8 +178,9 @@ public class WelcomeOnboardingActivity extends FirstRunActivityBase
     }
 
     private void finalStep() {
+        // Music Browser: no search widget promo.
         ChromeSharedPreferences.getInstance()
-                .writeBoolean(OnboardingPrefManager.SHOULD_SHOW_SEARCH_WIDGET_PROMO, true);
+                .writeBoolean(OnboardingPrefManager.SHOULD_SHOW_SEARCH_WIDGET_PROMO, false);
         CustomizeBraveMenu.initDefaultInvisibleItems(getResources());
         OnboardingPrefManager.getInstance().setP3aOnboardingShown(true);
 

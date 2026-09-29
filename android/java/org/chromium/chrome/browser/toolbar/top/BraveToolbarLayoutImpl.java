@@ -159,6 +159,7 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
     public static boolean mShouldShowPlaylistMenu;
 
     private PlaylistServiceObserverImpl mPlaylistServiceObserver;
+    private final Set<String> mMusicBrowserAddedSources = new HashSet<>();
 
     private final DatabaseHelper mDatabaseHelper = DatabaseHelper.getInstance();
 
@@ -450,11 +451,7 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
     @Override
     protected void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-        if (isPlaylistEnabledByPrefsAndFlags()) {
-            initPlaylistService();
-            mPlaylistServiceObserver = new PlaylistServiceObserverImpl(this);
-            mPlaylistService.addObserver(mPlaylistServiceObserver);
-        }
+        ensurePlaylistObserver();
 
         mBraveShieldsContentSettings = BraveShieldsContentSettings.getInstance();
         mBraveShieldsContentSettings.addObserver(mBraveShieldsContentSettingsObserver);
@@ -749,7 +746,22 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
         }
     }
 
+    // Music Browser: on a fresh install there is no tab yet when native is ready, so the
+    // playlist observer is attached lazily, once a tab exists. Without it nothing is saved.
+    private void ensurePlaylistObserver() {
+        if (mPlaylistServiceObserver != null || !isPlaylistEnabledByPrefsAndFlags()) {
+            return;
+        }
+        initPlaylistService();
+        if (mPlaylistService == null) {
+            return;
+        }
+        mPlaylistServiceObserver = new PlaylistServiceObserverImpl(this);
+        mPlaylistService.addObserver(mPlaylistServiceObserver);
+    }
+
     private void findMediaFiles() {
+        ensurePlaylistObserver();
         if (mPlaylistService != null && isPlaylistEnabledByPrefsAndFlags()) {
             hidePlaylistButton();
             mPlaylistService.findMediaFilesFromActiveTab();
@@ -831,8 +843,12 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                     for (PlaylistItem playlistItem : items) {
                         // Check for duplicates in default playlist
                         String mediaUrl = playlistItem.mediaSource.url;
-                        if (!pageSources.contains(playlistItem.pageSource.url)
-                                && (mediaUrl.isEmpty() || !mediaSources.contains(mediaUrl))) {
+                        String pageUrl = playlistItem.pageSource.url;
+                        if (!pageSources.contains(pageUrl)
+                                && (mediaUrl.isEmpty() || !mediaSources.contains(mediaUrl))
+                                // Music Browser: two detections can race before either
+                                // add lands; remember what this session already added.
+                                && mMusicBrowserAddedSources.add(pageUrl + "\n" + mediaUrl)) {
                             playlistItems.add(playlistItem);
                             mediaSources.add(mediaUrl);
                         }
@@ -1313,15 +1329,13 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
             return;
         }
 
+        // Music Browser: a plain shield, not the Brave logo.
         if (tab == null) {
-            mBraveShieldsButton.setImageResource(
-                    R.drawable.ic_social_brave_monochrome_favicon_fullheight_color);
+            mBraveShieldsButton.setImageResource(R.drawable.mb_ic_shield_off);
             return;
         }
         mBraveShieldsButton.setImageResource(
-                isShieldsOnForTab(tab)
-                        ? R.drawable.ic_social_brave_release_favicon_fullheight_color
-                        : R.drawable.ic_social_brave_monochrome_favicon_fullheight_color);
+                isShieldsOnForTab(tab) ? R.drawable.mb_ic_shield_on : R.drawable.mb_ic_shield_off);
 
         if (mRewardsLayout == null) return;
         if (isIncognito()) {

@@ -110,6 +110,20 @@ public class BrowsingModeBottomToolbarCoordinator {
         mSearchAccelerator = mToolbarRoot.findViewById(R.id.search_accelerator);
         mSearchAccelerator.setOnClickListener(searchAcceleratorListener);
         BraveTouchUtils.ensureMinTouchTarget(mSearchAccelerator);
+        // Music Browser: the wide middle button opens Music (search stays in the address bar).
+        mSearchAccelerator.setImageResource(R.drawable.mb_ic_music_21dp);
+        mSearchAccelerator.setContentDescription("Music");
+        mSearchAccelerator.setOnClickListener(
+                v -> {
+                    try {
+                        BraveActivity.getBraveActivity()
+                                .openPlaylistActivity(
+                                        v.getContext(),
+                                        com.brave.playlist.util.ConstantUtils.DEFAULT_PLAYLIST);
+                    } catch (BraveActivity.BraveActivityNotFoundException e) {
+                        // No activity to open Music from.
+                    }
+                });
 
         // TODO(amaralp): Make this adhere to MVC framework.
         mTabSwitcherButtonView = mToolbarRoot.findViewById(R.id.bottom_tab_switcher_button);
@@ -123,7 +137,8 @@ public class BrowsingModeBottomToolbarCoordinator {
             mBraveHomeButton.setVisibility(View.VISIBLE);
         }
 
-        if (BottomToolbarVariationManager.isTabSwitcherOnBottomControls()) {
+        if (BottomToolbarVariationManager.isTabSwitcherOnBottomControls()
+                && !musicBrowserHidesTabSwitcher()) {
             mTabSwitcherButtonView.setVisibility(View.VISIBLE);
         }
 
@@ -275,6 +290,11 @@ public class BrowsingModeBottomToolbarCoordinator {
     /**
      * @return The browsing mode bottom toolbar's search button.
      */
+    // Music Browser: single tab; Music is the middle button.
+    private static boolean musicBrowserHidesTabSwitcher() {
+        return true;
+    }
+
     SearchAccelerator getSearchAccelerator() {
         return mSearchAccelerator;
     }

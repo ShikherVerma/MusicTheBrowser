@@ -56,7 +56,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kBrandedWallpaperNotificationDismissed,
                                 false);
-  registry->RegisterBooleanPref(prefs::kNewTabPageShowBackgroundImage, true);
+  // Music Browser: plain new tab page, no wallpaper.
+  registry->RegisterBooleanPref(prefs::kNewTabPageShowBackgroundImage, false);
   registry->RegisterIntegerPref(
       prefs::kNewTabTakeoverInfobarRemainingDisplayCount,
       kNewTabTakeoverInfobarRemainingDisplayCountThreshold);

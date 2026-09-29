@@ -162,3 +162,33 @@ substitutions:
       replace: |-
         \1{% include "//brave/android/java/AndroidManifest.xml" %}
         \1\2
+
+  - description: |
+      Music Browser: drop permissions a music player does not need (location,
+      camera, microphone, notifications, push, package queries, APK installs,
+      ad attribution, install referrer).
+    count: 12
+    regex:
+      re_pattern: '^([ \t]*)(<uses-permission(?:-sdk-23)?\s+android:name="(?:android\.permission\.(?:ACCESS_COARSE_LOCATION|ACCESS_FINE_LOCATION|ACCESS_ADSERVICES_ATTRIBUTION|CAMERA|FOREGROUND_SERVICE_MICROPHONE|POST_NOTIFICATIONS|POST_PROMOTED_NOTIFICATIONS|QUERY_ALL_PACKAGES|RECORD_AUDIO|REQUEST_INSTALL_PACKAGES)|com\.google\.android\.c2dm\.permission\.RECEIVE|com\.google\.android\.finsky\.permission\.BIND_GET_INSTALL_REFERRER_SERVICE)"\s*/>)$'
+      re_flags: [MULTILINE]
+      replace: |-
+        <!--
+        \1\2
+        -->
+
+  - description: |
+      Music Browser: media capture has no camera or microphone permission any
+      more, so its notification service only declares media playback.
+    regex:
+      pattern: 'android:foregroundServiceType="camera|microphone|mediaPlayback"'
+      replace: 'android:foregroundServiceType="mediaPlayback"'
+
+  - description: |
+      Music Browser: no in-app purchases; remove the billing permission that
+      the Play Billing library adds at manifest merge time.
+    regex:
+      re_pattern: '^([ \t]*)(<uses-permission android:name="android\.permission\.INTERNET"\s*/>)$'
+      re_flags: [MULTILINE]
+      replace: |-
+        \1\2
+        \1<uses-permission android:name="com.android.vending.BILLING" tools:node="remove"/>
