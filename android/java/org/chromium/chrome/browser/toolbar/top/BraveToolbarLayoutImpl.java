@@ -1734,7 +1734,13 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
     @Override
     public void onMediaFilesUpdated(Url pageUrl, PlaylistItem[] playlistItems) {
         Tab currentTab = getToolbarDataProvider().getTab();
-        if (currentTab == null || !pageUrl.url.equals(currentTab.getUrl().getSpec())) {
+        // Music Browser: sites like archive.org rewrite the address per track right as it
+        // starts, so accept detections from the same site, not only the exact page URL.
+        if (currentTab == null
+                || !(pageUrl.url.equals(currentTab.getUrl().getSpec())
+                        || new GURL(pageUrl.url)
+                                .getOrigin()
+                                .equals(currentTab.getUrl().getOrigin()))) {
             return;
         }
         if (playlistItems.length > 0 && !UrlUtilities.isNtpUrl(currentTab.getUrl().getSpec())) {

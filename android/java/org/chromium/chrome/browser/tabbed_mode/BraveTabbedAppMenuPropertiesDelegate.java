@@ -989,9 +989,9 @@ public class BraveTabbedAppMenuPropertiesDelegate extends TabbedAppMenuPropertie
 
         // Music Browser: a music app's menu, not a full browser menu.
         if (menuGroup == MenuGroup.PAGE_MENU) {
+            // Music has its own button in the bottom bar.
             List<Integer> musicBrowserKeep =
                     Arrays.asList(
-                            R.id.brave_playlist_id,
                             R.id.open_history_menu_id,
                             R.id.share_menu_id,
                             R.id.preferences_id,

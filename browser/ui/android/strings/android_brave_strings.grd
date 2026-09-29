@@ -3476,13 +3476,13 @@ If you don't accept this request, VPN will not reconnect and your internet conne
       Play Later
     </message>
     <message name="IDS_PLAYLIST_BROWSE_AND_ADD" desc="Browse and add button text">
-      Your music lives here
+      Browse and add
     </message>
     <message name="IDS_PLAYLIST_BROWSE_AND_ADD_MESSAGE" desc="Browse and add button description text">
-      Play music on any website and it is saved here automatically, ready to play offline.
+      Add your favorite content. Look for the ( + ) button in the lower right part of your screen.
     </message>
     <message name="IDS_PLAYLIST_BROWSE_FOR_MEDIA" desc="Browse for media text">
-      Find music
+      Browse for media
     </message>
     <message name="IDS_PLAYLIST_NEW_TEXT" desc="New playlist text">
       New playlist

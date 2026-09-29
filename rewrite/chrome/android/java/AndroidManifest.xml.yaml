@@ -184,11 +184,13 @@ substitutions:
       replace: 'android:foregroundServiceType="mediaPlayback"'
 
   - description: |
-      Music Browser: no in-app purchases; remove the billing permission that
-      the Play Billing library adds at manifest merge time.
+      Music Browser: remove permissions that libraries add back at manifest
+      merge time: billing (no in-app purchases), notifications and push.
     regex:
       re_pattern: '^([ \t]*)(<uses-permission android:name="android\.permission\.INTERNET"\s*/>)$'
       re_flags: [MULTILINE]
       replace: |-
         \1\2
         \1<uses-permission android:name="com.android.vending.BILLING" tools:node="remove"/>
+        \1<uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:node="remove"/>
+        \1<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" tools:node="remove"/>

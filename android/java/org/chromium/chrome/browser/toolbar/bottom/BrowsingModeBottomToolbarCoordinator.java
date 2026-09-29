@@ -8,6 +8,7 @@ package org.chromium.chrome.browser.toolbar.bottom;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -140,6 +141,13 @@ public class BrowsingModeBottomToolbarCoordinator {
         if (BottomToolbarVariationManager.isTabSwitcherOnBottomControls()
                 && !musicBrowserHidesTabSwitcher()) {
             mTabSwitcherButtonView.setVisibility(View.VISIBLE);
+        } else if (musicBrowserHidesTabSwitcher()
+                && mTabSwitcherButtonView.getParent() instanceof ViewGroup parent) {
+            // Drop the spacer after the hidden button so the rest stay evenly spaced.
+            View spacer = parent.getChildAt(parent.indexOfChild(mTabSwitcherButtonView) + 1);
+            if (spacer != null) {
+                spacer.setVisibility(View.GONE);
+            }
         }
 
         mBookmarkButton = mToolbarRoot.findViewById(R.id.bottom_bookmark_button);
