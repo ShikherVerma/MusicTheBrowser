@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.playlist.hls_content.HlsServiceImpl;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.util.TabUtils;
+import org.chromium.chrome.browser.toolbar.bottom.FairModeSwitcher;
 import org.chromium.mojo.bindings.ConnectionErrorHandler;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.playlist.mojom.Playlist;
@@ -95,6 +98,17 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
     @Override
     protected void triggerLayoutInflation() {
         setContentView(R.layout.activity_playlist_host);
+        // Music Browser: Browse returns to the same tab, without recreating the browser.
+        FairModeSwitcher modeSwitcher = findViewById(R.id.fair_music_mode_switcher);
+        modeSwitcher.setSelection(true, this::finish);
+        int padding = Math.round(8 * getResources().getDisplayMetrics().density);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fair_music_mode_strip),
+                (view, insets) -> {
+                    int bottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+                    view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(),
+                            padding + bottom);
+                    return insets;
+                });
         onInitialLayoutInflationComplete();
     }
 

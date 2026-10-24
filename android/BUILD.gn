@@ -557,6 +557,7 @@ android_resources("java_resources") {
     "java/brave-res/layout/custom_layout_preference.xml",
     "java/brave-res/layout/dapps_dialog.xml",
     "java/brave-res/layout/dialog_skip_onboarding.xml",
+    "java/brave-res/layout/fair_mode_switcher.xml",
     "java/brave-res/layout/fragment_ad_free_callout_dialog.xml",
     "java/brave-res/layout/fragment_add_custom_filter_lists.xml",
     "java/brave-res/layout/fragment_add_switch_ethereum_chain.xml",
@@ -726,6 +727,7 @@ if (current_toolchain == default_toolchain) {
       "java/res_fair/values-night/fair_colors.xml",
       "java/res_fair/values/fair_colors.xml",
       "java/res_fair/values/fair_dimens.xml",
+      "java/res_fair/values/fair_strings.xml",
     ]
     # Dependents override dependencies in AAPT2, including chrome_app's overlay.
     deps = [

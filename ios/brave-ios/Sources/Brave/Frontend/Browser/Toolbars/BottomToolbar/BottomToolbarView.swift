@@ -50,7 +50,13 @@ class BottomToolbarView: UIView, ToolbarProtocol {
     helper = ToolbarHelper(toolbar: self)
     addButtons(actionButtons)
     contentView.axis = .horizontal
-    contentView.distribution = .fillEqually
+    // Music Browser: reserve full-size targets beside the wide mode switcher.
+    contentView.distribution = .fill
+    contentView.spacing = 16
+    contentView.isLayoutMarginsRelativeArrangement = true
+    contentView.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+    backButton.snp.makeConstraints { $0.width.equalTo(48) }
+    menuButton.snp.makeConstraints { $0.width.equalTo(48) }
 
     addGestureRecognizer(
       UIPanGestureRecognizer(target: self, action: #selector(didSwipeToolbar(_:)))
@@ -84,6 +90,7 @@ class BottomToolbarView: UIView, ToolbarProtocol {
     updateColors()
 
     registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (self: Self, _) in
+      self.setNeedsUpdateConstraints()
       self.helper?.updateForTraitCollection(
         self.traitCollection,
         browserColors: self.privateBrowsingManager.browserColors,
@@ -114,10 +121,11 @@ class BottomToolbarView: UIView, ToolbarProtocol {
   }
 
   override func updateConstraints() {
-    contentView.snp.makeConstraints { make in
+    contentView.snp.remakeConstraints { make in
       make.leading.trailing.top.equalTo(self)
       make.bottom.equalTo(self.safeArea.bottom)
-      make.height.equalTo(UIConstants.toolbarHeight)
+      // Music Browser: a 48 pt switcher with 8 pt padding, growing for Dynamic Type.
+      make.height.equalTo(max(64, tabsButton.intrinsicContentSize.height + 16))
     }
     super.updateConstraints()
   }

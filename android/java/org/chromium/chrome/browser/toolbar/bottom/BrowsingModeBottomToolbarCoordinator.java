@@ -8,7 +8,6 @@ package org.chromium.chrome.browser.toolbar.bottom;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewGroup;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -62,6 +61,9 @@ public class BrowsingModeBottomToolbarCoordinator {
     /** The search accelerator that lives in the bottom toolbar. */
     private final SearchAccelerator mSearchAccelerator;
 
+    // Music Browser: shared content switcher, not a search/tab button.
+    private final FairModeSwitcher mFairModeSwitcher;
+
     /** The tab switcher button component that lives in the bottom toolbar. */
     private final TabSwitcherButtonCoordinator mTabSwitcherButtonCoordinator;
 
@@ -111,15 +113,16 @@ public class BrowsingModeBottomToolbarCoordinator {
         mSearchAccelerator = mToolbarRoot.findViewById(R.id.search_accelerator);
         mSearchAccelerator.setOnClickListener(searchAcceleratorListener);
         BraveTouchUtils.ensureMinTouchTarget(mSearchAccelerator);
-        // Music Browser: the wide middle button opens Music (search stays in the address bar).
-        mSearchAccelerator.setImageResource(R.drawable.mb_ic_music_21dp);
-        mSearchAccelerator.setContentDescription("Music");
-        mSearchAccelerator.setOnClickListener(
-                v -> {
+        // Music Browser: keep the old view hidden for its upstream tint/observer lifecycle.
+        mSearchAccelerator.setVisibility(View.GONE);
+        mFairModeSwitcher = mToolbarRoot.findViewById(R.id.fair_browse_mode_switcher);
+        mFairModeSwitcher.setSelection(
+                false,
+                () -> {
                     try {
                         BraveActivity.getBraveActivity()
                                 .openPlaylistActivity(
-                                        v.getContext(),
+                                        mToolbarRoot.getContext(),
                                         com.brave.playlist.util.ConstantUtils.DEFAULT_PLAYLIST);
                     } catch (BraveActivity.BraveActivityNotFoundException e) {
                         // No activity to open Music from.
@@ -141,13 +144,6 @@ public class BrowsingModeBottomToolbarCoordinator {
         if (BottomToolbarVariationManager.isTabSwitcherOnBottomControls()
                 && !musicBrowserHidesTabSwitcher()) {
             mTabSwitcherButtonView.setVisibility(View.VISIBLE);
-        } else if (musicBrowserHidesTabSwitcher()
-                && mTabSwitcherButtonView.getParent() instanceof ViewGroup parent) {
-            // Drop the spacer after the hidden button so the rest stay evenly spaced.
-            View spacer = parent.getChildAt(parent.indexOfChild(mTabSwitcherButtonView) + 1);
-            if (spacer != null) {
-                spacer.setVisibility(View.GONE);
-            }
         }
 
         mBookmarkButton = mToolbarRoot.findViewById(R.id.bottom_bookmark_button);
@@ -171,6 +167,10 @@ public class BrowsingModeBottomToolbarCoordinator {
             mBookmarkButton.setOnClickListener(bookmarkClickHandler);
         }
 
+        // Music Browser: one tab, no bookmarks/new-tab affordance in the bottom strip.
+        ((View) mBookmarkButton.getParent()).setVisibility(View.GONE);
+        getNewTabButtonParent().setVisibility(View.GONE);
+        mNewTabButton.setVisibility(View.GONE);
         mMenuButton = mToolbarRoot.findViewById(R.id.menu_button_wrapper);
     }
 
@@ -303,8 +303,9 @@ public class BrowsingModeBottomToolbarCoordinator {
         return true;
     }
 
-    SearchAccelerator getSearchAccelerator() {
-        return mSearchAccelerator;
+    View getSearchAccelerator() {
+        // Music Browser: upstream visibility changes should affect the actual middle control.
+        return mFairModeSwitcher;
     }
 
     /**

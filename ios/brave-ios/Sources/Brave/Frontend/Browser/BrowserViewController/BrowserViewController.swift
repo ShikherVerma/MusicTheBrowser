@@ -676,8 +676,8 @@ public class BrowserViewController: UIViewController {
   }
 
   func shouldShowFooterForTraitCollection(_ previousTraitCollection: UITraitCollection) -> Bool {
-    return previousTraitCollection.verticalSizeClass != .compact
-      && previousTraitCollection.horizontalSizeClass != .regular
+    // Music Browser: keep the mode switch in the same bottom position in every orientation.
+    return true
   }
 
   private func updateUsingBottomBar(using traitCollection: UITraitCollection) {

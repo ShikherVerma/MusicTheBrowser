@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.view.View;
 
+import org.chromium.chrome.R;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -28,7 +30,8 @@ public class BrowsingModeBottomToolbarViewBinder
     public final void bind(
             BrowsingModeBottomToolbarModel model, View view, PropertyKey propertyKey) {
         if (BrowsingModeBottomToolbarModel.PRIMARY_COLOR == propertyKey) {
-            view.setBackgroundColor(model.get(BrowsingModeBottomToolbarModel.PRIMARY_COLOR));
+            // Music Browser: web page theme colours must not replace the Carbon mode strip.
+            view.setBackgroundColor(view.getContext().getColor(R.color.page_background));
         } else if (BrowsingModeBottomToolbarModel.IS_VISIBLE == propertyKey) {
             view.setVisibility(model.get(BrowsingModeBottomToolbarModel.IS_VISIBLE) ? View.VISIBLE
                                                                                     : View.GONE);

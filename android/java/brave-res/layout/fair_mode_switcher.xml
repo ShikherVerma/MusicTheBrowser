@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Music Browser: Carbon content switcher, shared by Browse and Music. -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <Button
+        android:id="@+id/fair_mode_browse"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:minWidth="96dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/fair_browse"
+        android:textAllCaps="false"
+        android:textSize="14sp" />
+    <Button
+        android:id="@+id/fair_mode_music"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:minWidth="96dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/fair_music"
+        android:textAllCaps="false"
+        android:textSize="14sp" />
+</merge>

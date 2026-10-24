@@ -6,6 +6,7 @@
 import AVFoundation
 import CoreData
 import Data
+import DesignSystem
 import Foundation
 import Playlist
 import Preferences
@@ -82,89 +83,99 @@ struct PlaylistContentView: View {
   }
 
   public var body: some View {
-    PlaylistSplitView(selectedDetent: $selectedDetent) {
-      PlaylistSidebarList(
-        folders: Array(folders),
-        folderID: selectedFolderID,
-        selectedItemID: selectedItemIDBinding,
-        isPlaying: playerModel.isPlaying,
-        onPlaylistUpdated: {
-          // Update the queue to reflect updated playlist
-          playerModel.makeItemQueue(selectedItemID: selectedItemID)
-        }
-      )
-    } sidebarHeader: {
-      if let selectedFolder = selectedFolder {
-        PlaylistSidebarListHeader(
+    // Music Browser: keep the drawer inside the content bounds, above the mode strip.
+    VStack(spacing: 0) {
+      PlaylistSplitView(selectedDetent: $selectedDetent) {
+        PlaylistSidebarList(
           folders: Array(folders),
-          selectedFolder: Binding(
-            get: {
-              selectedFolder
-            },
-            set: {
-              playerModel.selectedFolderID = $0.id
-            }
-          ),
-          selectedItemID: selectedItemID,
-          isPlaying: Binding(
-            get: {
-              playerModel.isPlaying
-            },
-            set: { newValue in
-              if newValue {
-                if selectedItemID == nil {
-                  playerModel.selectedItemID = playerModel.itemQueue.first
-                } else {
-                  playerModel.play()
-                }
-              } else {
-                playerModel.pause()
-              }
-            }
-          ),
-          isNewPlaylistAlertPresented: $isNewPlaylistAlertPresented,
-          isEditModePresented: $isEditModePresented
+          folderID: selectedFolderID,
+          selectedItemID: selectedItemIDBinding,
+          isPlaying: playerModel.isPlaying,
+          onPlaylistUpdated: {
+            // Update the queue to reflect updated playlist
+            playerModel.makeItemQueue(selectedItemID: selectedItemID)
+          }
         )
-      }
-    } content: {
-      ZStack {
-        if let selectedItem {
-          MediaContentView(
-            model: playerModel,
-            selectedItem: selectedItem
+      } sidebarHeader: {
+        if let selectedFolder = selectedFolder {
+          PlaylistSidebarListHeader(
+            folders: Array(folders),
+            selectedFolder: Binding(
+              get: {
+                selectedFolder
+              },
+              set: {
+                playerModel.selectedFolderID = $0.id
+              }
+            ),
+            selectedItemID: selectedItemID,
+            isPlaying: Binding(
+              get: {
+                playerModel.isPlaying
+              },
+              set: { newValue in
+                if newValue {
+                  if selectedItemID == nil {
+                    playerModel.selectedItemID = playerModel.itemQueue.first
+                  } else {
+                    playerModel.play()
+                  }
+                } else {
+                  playerModel.pause()
+                }
+              }
+            ),
+            isNewPlaylistAlertPresented: $isNewPlaylistAlertPresented,
+            isEditModePresented: $isEditModePresented
           )
-          .playlistSheetDetents([.anchor(.mediaControls), .anchor(.mediaPlayer), .large])
-        } else {
-          PlaylistContentUnavailableView(isPlaylistEmpty: PlaylistItem.count() == 0)
-            .playlistSheetDetents([.anchor(.emptyPlaylistContent), .large])
         }
-      }
-    } toolbar: {
-      Button(Strings.Playlist.doneButtonTitle) {
-        dismiss()
-      }
-      .fontWeight(.semibold)
-      Spacer()
-      if playerModel.isPictureInPictureSupported {
+      } content: {
+        ZStack {
+          if let selectedItem {
+            MediaContentView(
+              model: playerModel,
+              selectedItem: selectedItem
+            )
+            .playlistSheetDetents([.anchor(.mediaControls), .anchor(.mediaPlayer), .large])
+          } else {
+            PlaylistContentUnavailableView(isPlaylistEmpty: PlaylistItem.count() == 0)
+              .playlistSheetDetents([.anchor(.emptyPlaylistContent), .large])
+          }
+        }
+      } toolbar: {
+        Text("Music")
+          .fairFont(.heading02)
+        Spacer()
+        if playerModel.isPictureInPictureSupported {
+          Button {
+            playerModel.startPictureInPicture()
+            dismiss()
+          } label: {
+            Label(
+              Strings.Playlist.accessibilityEnterPictureInPicture,
+              braveSystemImage: "leo.picture.in-picture"
+            )
+          }
+          .labelStyle(.iconOnly)
+          .transition(.opacity.animation(.default))
+        }
         Button {
-          playerModel.startPictureInPicture()
-          dismiss()
+          isPresentingSearch = true
         } label: {
-          Label(
-            Strings.Playlist.accessibilityEnterPictureInPicture,
-            braveSystemImage: "leo.picture.in-picture"
-          )
+          Label(Strings.Playlist.searchTitle, braveSystemImage: "leo.search")
         }
         .labelStyle(.iconOnly)
-        .transition(.opacity.animation(.default))
       }
-      Button {
-        isPresentingSearch = true
-      } label: {
-        Label(Strings.Playlist.searchTitle, braveSystemImage: "leo.search")
+      .clipped()
+      Divider()
+      ModeSwitcher(selection: .music) { mode in
+        if mode == .browse { dismiss() }
       }
-      .labelStyle(.iconOnly)
+      .padding(.horizontal, 80)
+      .padding(.vertical, 8)
+      .background(Color(braveSystemName: .pageBackground), ignoresSafeAreaEdges: .bottom)
     }
+    .preferredColorScheme(.dark)
     .task {
       await playerModel.prepareItemQueue()
       if selectedItem != nil {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Music Browser: copy owned by Fair, including the Playlist AAR override. -->
+<resources>
+    <string name="fair_browse">Browse</string>
+    <string name="fair_music">Music</string>
+    <string name="fair_mode_accessibility">Mode, %1$s, %2$d of 2</string>
+    <string name="playlist_play_later">All music</string>
+</resources>

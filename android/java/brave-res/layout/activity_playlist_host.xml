@@ -3,9 +3,32 @@
      This Source Code Form is subject to the terms of the Mozilla Public
      License, v. 2.0. If a copy of the MPL was not distributed with this file,
      You can obtain one at https://mozilla.org/MPL/2.0/. -->
-
-<androidx.fragment.app.FragmentContainerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_container_view_tag"
+<!-- Music Browser: reserve a sibling strip so the library never covers Browse. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/page_background">
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view_tag"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_subtle" />
+    <FrameLayout
+        android:id="@+id/fair_music_mode_strip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="80dp"
+        android:paddingEnd="80dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+        <org.chromium.chrome.browser.toolbar.bottom.FairModeSwitcher
+            android:id="@+id/fair_music_mode_switcher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</LinearLayout>
