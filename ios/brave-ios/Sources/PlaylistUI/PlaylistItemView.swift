@@ -21,10 +21,7 @@ struct PlaylistItemView: View {
   var isSelected: Bool
   var isPlaying: Bool
   var cacheState: ItemCacheState?
-
-  @ScaledMetric private var progressViewSize = 16
-  // Don't need to scale the guage line width, but it looks better when it does
-  @ScaledMetric private var gaugeLineWidth = 2
+  var savedBytes: Int? = nil
 
   var body: some View {
     HStack(spacing: 12) {
@@ -67,19 +64,15 @@ struct PlaylistItemView: View {
           case .unknown:
             EmptyView()
           }
+          if let savedBytes {
+            Text("·")
+            Text(ByteCountFormatter.string(fromByteCount: Int64(savedBytes), countStyle: .file))
+          }
           if let cacheState {
             switch cacheState {
             case .downloading(let percentCompleted):
-              Label {
-                Text(Strings.Playlist.itemDownloadStatusPreparing)
-              } icon: {
-                Gauge(value: percentCompleted) {
-                  EmptyView()
-                }
-                .gaugeStyle(.circularCapacity(lineWidth: gaugeLineWidth))
-                .frame(width: progressViewSize, height: progressViewSize)
-              }
-              .foregroundColor(Color(braveSystemName: .primary50))
+              Text("Saving… \(Int(min(1, max(0, percentCompleted)) * 100))%")
+                .foregroundStyle(Color(braveSystemName: .textInteractive))
             case .completed:
               Label {
                 Text(Strings.Playlist.accessibilityItemDownloadStatusReady)
@@ -92,6 +85,17 @@ struct PlaylistItemView: View {
         }
         .fairFont(.code02)
         .foregroundStyle(Color(braveSystemName: .textSecondary))
+        if case .downloading(let percent) = cacheState {
+          GeometryReader { proxy in
+            Rectangle().fill(Color(braveSystemName: .containerHighlight))
+              .overlay(alignment: .leading) {
+                Rectangle().fill(Color(braveSystemName: .textInteractive))
+                  .frame(width: proxy.size.width * min(1, max(0, percent)))
+              }
+          }
+          .frame(height: 4)
+          .accessibilityHidden(true)
+        }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
     }

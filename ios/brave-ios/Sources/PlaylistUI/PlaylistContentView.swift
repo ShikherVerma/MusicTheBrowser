@@ -108,25 +108,15 @@ struct PlaylistContentView: View {
                 playerModel.selectedFolderID = $0.id
               }
             ),
-            selectedItemID: selectedItemID,
-            isPlaying: Binding(
-              get: {
-                playerModel.isPlaying
-              },
-              set: { newValue in
-                if newValue {
-                  if selectedItemID == nil {
-                    playerModel.selectedItemID = playerModel.itemQueue.first
-                  } else {
-                    playerModel.play()
-                  }
-                } else {
-                  playerModel.pause()
-                }
-              }
-            ),
             isNewPlaylistAlertPresented: $isNewPlaylistAlertPresented,
-            isEditModePresented: $isEditModePresented
+            isEditModePresented: $isEditModePresented,
+            onPlayAll: { shuffle in
+              let items = PlaylistItem.getItems(parentFolder: selectedFolder)
+              let first = shuffle ? items.randomElement()?.id : items.first?.id
+              guard let first else { return }
+              playerModel.isShuffleEnabled = shuffle
+              selectedItemIDBinding.wrappedValue = first
+            }
           )
         }
       } content: {

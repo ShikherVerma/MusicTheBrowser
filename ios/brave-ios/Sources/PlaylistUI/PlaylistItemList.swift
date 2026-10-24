@@ -24,6 +24,8 @@ struct PlaylistItemList: View {
   private typealias PlaylistItemUUID = String
   @State private var cacheStates: [PlaylistItemUUID: PlaylistDownloadManager.CacheState] = [:]
   @State private var cacheProgress: [PlaylistItemUUID: Double] = [:]
+  // Music Browser: file sizes, not estimates from the source stream.
+  @State private var savedBytes: [PlaylistItemUUID: Int] = [:]
 
   init(
     items: [PlaylistItem],
@@ -74,7 +76,8 @@ struct PlaylistItemList: View {
                 return .downloading(percentComplete: percentCompleted)
               }
               return nil
-            }()
+            }(),
+            savedBytes: item.uuid.flatMap { savedBytes[$0] }
           )
           .padding(.horizontal, 12)
           .padding(.vertical, 8)
@@ -157,6 +160,7 @@ struct PlaylistItemList: View {
             Label(Strings.Playlist.deleteItem, braveSystemImage: "leo.trash")
           }
         }
+        Divider()
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -164,6 +168,21 @@ struct PlaylistItemList: View {
       for item in items {
         guard let uuid = item.uuid else { continue }
         cacheStates[uuid] = await PlaylistManager.shared.cacheState(for: uuid)
+      }
+    }
+    .task(id: items.map(\.cachedData)) {
+      for item in items {
+        guard let uuid = item.uuid else { continue }
+        savedBytes[uuid] = nil
+        guard let data = item.cachedData,
+          let url = await PlaylistItem.resolvingCachedData(data),
+          let values = try? url.resourceValues(forKeys: [.fileSizeKey, .isDirectoryKey])
+        else { continue }
+        if values.isDirectory == true {
+          savedBytes[uuid] = (try? await AsyncFileManager.default.sizeOfDirectory(at: url)).map { Int($0) }
+        } else {
+          savedBytes[uuid] = values.fileSize
+        }
       }
     }
     .onReceive(PlaylistManager.shared.downloadStateChanged) { output in

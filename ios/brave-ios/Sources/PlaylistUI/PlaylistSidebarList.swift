@@ -67,10 +67,9 @@ struct PlaylistSidebarList: View {
 struct PlaylistSidebarListHeader: View {
   var folders: [PlaylistFolder]
   @Binding var selectedFolder: PlaylistFolder
-  var selectedItemID: PlaylistItem.ID?
-  @Binding var isPlaying: Bool
   @Binding var isNewPlaylistAlertPresented: Bool
   @Binding var isEditModePresented: Bool
+  var onPlayAll: (Bool) -> Void
 
   // Music Browser: show the lifetime count only near the free limit.
   @ObservedObject private var saves = FairSaveCount.shared
@@ -86,17 +85,15 @@ struct PlaylistSidebarListHeader: View {
   init(
     folders: [PlaylistFolder],
     selectedFolder: Binding<PlaylistFolder>,
-    selectedItemID: PlaylistItem.ID?,
-    isPlaying: Binding<Bool>,
     isNewPlaylistAlertPresented: Binding<Bool>,
-    isEditModePresented: Binding<Bool>
+    isEditModePresented: Binding<Bool>,
+    onPlayAll: @escaping (Bool) -> Void
   ) {
     self.folders = folders
     self._selectedFolder = selectedFolder
-    self.selectedItemID = selectedItemID
-    self._isPlaying = isPlaying
     self._isNewPlaylistAlertPresented = isNewPlaylistAlertPresented
     self._isEditModePresented = isEditModePresented
+    self.onPlayAll = onPlayAll
     self._selectedFolderItems = .init(
       sortDescriptors: [],
       predicate: .init(format: "playlistFolder.uuid == %@", selectedFolder.id)
@@ -135,118 +132,114 @@ struct PlaylistSidebarListHeader: View {
   }
 
   var body: some View {
-    HStack(spacing: 16) {
-      Button {
-        isPlaying.toggle()
-      } label: {
-        if isPlaying {
-          Label(
-            Strings.Playlist.accessibilityPause,
-            braveSystemImage: "leo.pause.circle"
-          )
-          .transition(.playButtonTransition)
-        } else {
-          Label(
-            Strings.Playlist.accessibilityPlay,
-            braveSystemImage: "leo.play.circle"
-          )
-          .transition(.playButtonTransition)
-        }
-      }
-      .imageScale(.large)
-      .font(.title2)
-      .labelStyle(.iconOnly)
-      .tint(Color(braveSystemName: .textPrimary))
-      .disabled(selectedItemID == nil && selectedFolderItems.isEmpty)
-      VStack(alignment: .leading) {
-        Menu {
-          Picker("", selection: $selectedFolder) {
-            ForEach(folders, id: \.objectID) { folder in
-              Label(folder.title ?? "", braveSystemImage: "leo.product.playlist")
-                .tag(folder)
+    VStack(alignment: .leading, spacing: 0) {
+      HStack(alignment: .top, spacing: 16) {
+        VStack(alignment: .leading) {
+          Menu {
+            Picker("", selection: $selectedFolder) {
+              ForEach(folders, id: \.objectID) { folder in
+                Label(folder.title ?? "", braveSystemImage: "leo.product.playlist")
+                  .tag(folder)
+              }
+            }
+            .pickerStyle(.inline)
+            Divider()
+            Button {
+              isNewPlaylistAlertPresented = true
+            } label: {
+              Label(Strings.Playlist.newPlaylistButtonTitle, braveSystemImage: "leo.plus.add")
+            }
+          } label: {
+            Text("\(selectedFolder.title ?? "") \(Image(braveSystemName: "leo.carat.down"))")
+              .fairFont(.heading02)
+              .foregroundStyle(Color(braveSystemName: .textPrimary))
+              .contentShape(.rect)
+          }
+          HStack {
+            let items = selectedFolderItems
+            let totalDuration = Duration.seconds(
+              items.reduce(
+                0,
+                { total, item in
+                  if !item.duration.isFinite || item.duration == .greatestFiniteMagnitude {
+                    // Skip infinite and max values (live videos)
+                    return total
+                  }
+                  return total + item.duration
+                }
+              )
+            )
+            let totalSize = totalSizeOnDisk
+            Text(
+              items.count == 1
+                ? Strings.Playlist.itemCountSingular
+                : String.localizedStringWithFormat(Strings.Playlist.itemCountPlural, items.count)
+            )
+            if !items.isEmpty {
+              Text(totalDuration, format: .units(width: .narrow, maximumUnitCount: 2))
+            }
+            // Cache-first manages the cache automatically, so the on-disk size isn't surfaced.
+            if !totalSize.value.isZero, !FeatureList.kPlaylistCacheFirstEnabled.enabled {
+              Text(totalSizeOnDisk, format: .byteCount(style: .file))
             }
           }
-          .pickerStyle(.inline)
-          Divider()
-          Button {
-            isNewPlaylistAlertPresented = true
-          } label: {
-            Label(Strings.Playlist.newPlaylistButtonTitle, braveSystemImage: "leo.plus.add")
+          .fairFont(.code02)
+          if !unlock.isUnlocked && saves.count >= Int(ceil(Double(saves.limit) * 0.9)) {
+            Text("\(saves.count.formatted()) of \(saves.limit.formatted()) free songs saved")
+              .fairFont(.code02)
+            Button("Unlock") { isUnlockPresented = true }
+              .frame(minHeight: 48)
+              .tint(Color(braveSystemName: .textInteractive))
+          }
+          if unlock.didUnlock {
+            Text("Unlocked. Every song you play is saved again.")
+              .fairFont(.body01)
+          }
+        }
+        Spacer()
+        Menu {
+          if selectedFolder.uuid != PlaylistFolder.savedFolderUUID {
+            Button {
+              isRenamePlaylistAlertPresented = true
+            } label: {
+              Label(Strings.Playlist.renamePlaylist, braveSystemImage: "leo.edit.pencil")
+            }
+            Button(role: .destructive) {
+              isDeletePlaylistConfirmationActive = true
+            } label: {
+              Label(Strings.Playlist.deletePlaylist, braveSystemImage: "leo.trash")
+            }
           }
         } label: {
-          Text("\(selectedFolder.title ?? "") \(Image(braveSystemName: "leo.carat.down"))")
+          Text(Strings.Playlist.editPlaylistShortTitle)
             .fontWeight(.semibold)
-            .foregroundStyle(Color(braveSystemName: .textPrimary))
-            .contentShape(.rect)
+        } primaryAction: {
+          isEditModePresented = true
         }
-        HStack {
-          let items = selectedFolderItems
-          let totalDuration = Duration.seconds(
-            items.reduce(
-              0,
-              { total, item in
-                if !item.duration.isFinite || item.duration == .greatestFiniteMagnitude {
-                  // Skip infinite and max values (live videos)
-                  return total
-                }
-                return total + item.duration
-              }
-            )
-          )
-          let totalSize = totalSizeOnDisk
-          Text(
-            items.count == 1
-              ? Strings.Playlist.itemCountSingular
-              : String.localizedStringWithFormat(Strings.Playlist.itemCountPlural, items.count)
-          )
-          if !items.isEmpty {
-            Text(totalDuration, format: .units(width: .narrow, maximumUnitCount: 2))
-          }
-          // Cache-first manages the cache automatically, so the on-disk size isn't surfaced.
-          if !totalSize.value.isZero, !FeatureList.kPlaylistCacheFirstEnabled.enabled {
-            Text(totalSizeOnDisk, format: .byteCount(style: .file))
-          }
-        }
-        .fairFont(.code02)
-        if !unlock.isUnlocked && saves.count >= Int(ceil(Double(saves.limit) * 0.9)) {
-          Text("\(saves.count.formatted()) of \(saves.limit.formatted()) free songs saved")
-            .fairFont(.code02)
-          Button("Unlock") { isUnlockPresented = true }
-            .frame(minHeight: 48)
-            .tint(Color(braveSystemName: .textInteractive))
-        }
-        if unlock.didUnlock {
-          Text("Unlocked. Every song you play is saved again.")
-            .fairFont(.body01)
-        }
+        .foregroundStyle(Color(braveSystemName: .textPrimary))
+        .disabled(
+          selectedFolder.uuid == PlaylistFolder.savedFolderUUID
+            && selectedFolder.playlistItems?.isEmpty == true
+        )
       }
-      Spacer()
-      Menu {
-        if selectedFolder.uuid != PlaylistFolder.savedFolderUUID {
-          Button {
-            isRenamePlaylistAlertPresented = true
-          } label: {
-            Label(Strings.Playlist.renamePlaylist, braveSystemImage: "leo.edit.pencil")
-          }
-          Button(role: .destructive) {
-            isDeletePlaylistConfirmationActive = true
-          } label: {
-            Label(Strings.Playlist.deletePlaylist, braveSystemImage: "leo.trash")
-          }
-        }
-      } label: {
-        Text(Strings.Playlist.editPlaylistShortTitle)
-          .fontWeight(.semibold)
-      } primaryAction: {
-        isEditModePresented = true
+      .padding()
+      // Music Browser: a flush 50/50 Carbon action pair, with text that can grow.
+      HStack(spacing: 0) {
+        Button("Play all") { onPlayAll(false) }
+          .frame(maxWidth: .infinity, minHeight: 48)
+          .foregroundStyle(.white)
+          .background(Color(braveSystemName: .buttonBackground))
+        Button("Shuffle") { onPlayAll(true) }
+          .frame(maxWidth: .infinity, minHeight: 48)
+          .foregroundStyle(Color(braveSystemName: .textPrimary))
+          .overlay { Rectangle().strokeBorder(Color(braveSystemName: .dividerStrong), lineWidth: 1) }
       }
-      .foregroundStyle(Color(braveSystemName: .textPrimary))
-      .disabled(
-        selectedFolder.uuid == PlaylistFolder.savedFolderUUID
-          && selectedFolder.playlistItems?.isEmpty == true
-      )
+      .fairFont(.bodyCompact02)
+      .buttonStyle(.plain)
+      .disabled(selectedFolderItems.isEmpty)
+      .padding(.horizontal, 16)
+      .padding(.bottom, 16)
     }
-    .padding()
     .sheet(isPresented: $isUnlockPresented) { FairUnlockView() }
     .onDisappear { unlock.clearUnlockNotice() }
     .task {
