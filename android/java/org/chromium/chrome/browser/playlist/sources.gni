@@ -4,6 +4,11 @@
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 
 brave_app_playlist_deps = [
+  # Music Browser: device-only lifetime count and store-only non-consumable.
+  "//third_party/android_deps:google_play_services_auth_blockstore_java",
+  "//third_party/android_deps:google_play_services_tasks_java",
+  "//third_party/android_deps:material_design_java",
+  "//brave/third_party/android_deps:com_android_billingclient_java",
   "//brave/third_party/android_deps:androidx_media3_media3_exoplayer_hls_java",
   "//brave/third_party/android_deps:com_brave_playlist_java",
   "//third_party/androidx:androidx_media3_media3_common_java",

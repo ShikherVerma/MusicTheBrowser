@@ -13,6 +13,10 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.content.pm.PackageManager;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.TypefaceSpan;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
@@ -42,6 +46,10 @@ import org.chromium.chrome.browser.notifications.BravePermissionUtils;
 import org.chromium.chrome.browser.notifications.permissions.BraveNotificationPermissionRationaleDialog;
 import org.chromium.chrome.browser.onboarding.OnboardingPrefManager;
 import org.chromium.chrome.browser.partnercustomizations.CloseBraveManager;
+import org.chromium.chrome.browser.playlist.FairSaveCount;
+import org.chromium.chrome.browser.playlist.FairUnlock;
+import org.chromium.chrome.browser.playlist.FairUnlockSheet;
+import org.chromium.chrome.browser.util.TabUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.privacy.settings.BravePrivacySettings;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -151,6 +159,9 @@ public abstract class BraveMainPreferencesBase extends BravePreferenceFragment
         initRateBrave();
         setPreferenceListeners();
         notificationClick();
+        // Music Browser: About stays current after a save, purchase or restore.
+        FairSaveCount.get(requireContext()).changes().observe(this, ignored -> refreshFairSummary());
+        FairUnlock.get(requireContext()).changes().observe(this, ignored -> refreshFairSummary());
     }
 
     @Override
@@ -291,6 +302,70 @@ public abstract class BraveMainPreferencesBase extends BravePreferenceFragment
         for (String key : musicBrowserRemove) {
             removePreferenceIfPresent(key);
         }
+        // Music Browser: replace browser-branded About with the seven owned rows.
+        removePreferenceIfPresent(PREF_ABOUT_CHROME);
+        removePreferenceIfPresent(PREF_ABOUT_SECTION);
+        addFairAboutRows();
+    }
+
+    private static CharSequence fairMono(String text) {
+        SpannableString value = new SpannableString(text);
+        value.setSpan(new TypefaceSpan("monospace"), 0, value.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return value;
+    }
+
+    private void addFairRow(String key, String title, @Nullable Runnable action) {
+        Preference row = new Preference(requireContext());
+        row.setKey(key);
+        row.setTitle(title);
+        row.setIconSpaceReserved(false);
+        row.setSelectable(action != null);
+        if (action != null) {
+            row.setOnPreferenceClickListener(preference -> { action.run(); return true; });
+        }
+        getPreferenceScreen().addPreference(row);
+    }
+
+    private void addFairAboutRows() {
+        addFairRow("fair_unlock", "Unlock unlimited songs", () -> FairUnlockSheet.show(requireContext()));
+        addFairRow("fair_restore", "Restore purchase", () -> {
+            FairUnlockSheet.show(requireContext());
+            FairUnlock.get(requireContext()).restore();
+        });
+        addFairRow("fair_version", "Version", null);
+        Preference version = getPreferenceScreen().findPreference("fair_version");
+        if (version != null) {
+            try {
+                var info = requireContext().getPackageManager().getPackageInfo(
+                        requireContext().getPackageName(), 0);
+                version.setSummary(fairMono(info.versionName + " (" + info.getLongVersionCode() + ")"));
+            } catch (PackageManager.NameNotFoundException impossible) {
+                throw new IllegalStateException(impossible);
+            }
+            version.setSelectable(false);
+        }
+        addFairRow("fair_privacy", "Privacy policy", () -> TabUtils.openUrlInNewTab(false,
+                "https://shikherverma.com/fairapps/fairmusicbrowser/privacy"));
+        addFairRow("fair_licenses", "Open-source licences",
+                () -> TabUtils.openUrlInNewTab(false, "chrome://credits"));
+        addFairRow("fair_more_apps", "More Fair Apps", () -> TabUtils.openUrlInNewTab(false,
+                "https://play.google.com/store/apps/developer?id=Shikher+Verma"));
+        addFairRow("fair_website", "Fair Apps website", () -> TabUtils.openUrlInNewTab(false,
+                "https://shikherverma.com/fairapps/"));
+        refreshFairSummary();
+    }
+
+    private void refreshFairSummary() {
+        if (getPreferenceScreen() == null) return;
+        Preference row = getPreferenceScreen().findPreference("fair_unlock");
+        if (row == null) return;
+        FairSaveCount saves = FairSaveCount.get(requireContext());
+        boolean unlocked = FairUnlock.get(requireContext()).isUnlocked();
+        row.setTitle(unlocked ? "Unlimited songs" : "Unlock unlimited songs");
+        row.setSummary(fairMono(unlocked ? "Unlocked"
+                : java.text.NumberFormat.getIntegerInstance().format(saves.count()) + " of "
+                  + java.text.NumberFormat.getIntegerInstance().format(saves.limit()) + " free"));
+        row.setSelectable(!unlocked);
     }
 
     private void prepareBravePreferences() {

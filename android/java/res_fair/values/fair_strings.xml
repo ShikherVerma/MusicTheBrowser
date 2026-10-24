@@ -5,4 +5,13 @@
     <string name="fair_music">Music</string>
     <string name="fair_mode_accessibility">Mode, %1$s, %2$d of 2</string>
     <string name="playlist_play_later">All music</string>
+    <string name="fair_app_name">Fair Music Browser</string>
+    <string name="fair_unlock_title">Keep saving everything you play</string>
+    <string name="fair_unlock_body">Unlimited saved songs. One payment, yours to keep. No account, no subscription.</string>
+    <string name="fair_free_songs">%1$s of %2$s free songs saved</string>
+    <string name="fair_unlock_price">Unlock for %1$s</string>
+    <string name="fair_loading_price">Loading price…</string>
+    <string name="fair_price_unavailable">Price unavailable</string>
+    <string name="fair_restore_purchase">Restore purchase</string>
+    <string name="fair_unlock_later">Not now</string>
 </resources>

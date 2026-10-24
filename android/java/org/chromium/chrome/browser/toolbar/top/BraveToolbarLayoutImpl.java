@@ -75,6 +75,10 @@ import org.chromium.chrome.browser.omnibox.BraveLocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.onboarding.OnboardingPrefManager;
 import org.chromium.chrome.browser.playlist.PlaylistServiceFactoryAndroid;
+import org.chromium.chrome.browser.playlist.FairRecentSongs;
+import org.chromium.chrome.browser.playlist.FairSaveCount;
+import org.chromium.chrome.browser.playlist.FairUnlock;
+import org.chromium.chrome.browser.playlist.FairUnlockSheet;
 import org.chromium.chrome.browser.playlist.PlaylistServiceObserverImpl;
 import org.chromium.chrome.browser.playlist.PlaylistServiceObserverImpl.PlaylistServiceObserverImplDelegate;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -214,6 +218,8 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
             Collections.synchronizedSet(new HashSet<Integer>());
 
     private PlaylistService mPlaylistService;
+    // Music Browser: manual adds use the same detected-item/count gate as auto-save.
+    private boolean mFairManualAddRequested;
 
     public BraveToolbarLayoutImpl(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -421,6 +427,8 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                 PlaylistServiceFactoryAndroid.getInstance()
                         .getPlaylistService(
                                 Profile.fromWebContents(currentTab.getWebContents()), this);
+        FairSaveCount.get(getContext()).initialize(mPlaylistService);
+        FairUnlock.get(getContext());
     }
 
     @Override
@@ -824,64 +832,65 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
     }
 
     private void addMediaToPlaylist(PlaylistItem[] items, boolean showSnackBars) {
-        if (mPlaylistService == null) {
-            return;
-        }
-        mPlaylistService.getPlaylist(
-                ConstantUtils.DEFAULT_PLAYLIST,
-                defaultPlaylist -> {
-                    Set<String> pageSources = new HashSet<String>();
-                    // Music Browser: the same media can show up under several page
-                    // URLs (sites rewriting the address per track), so also dedupe
-                    // on the media URL.
-                    Set<String> mediaSources = new HashSet<String>();
-                    for (PlaylistItem defaultPlaylistItem : defaultPlaylist.items) {
-                        pageSources.add(defaultPlaylistItem.pageSource.url);
-                        mediaSources.add(defaultPlaylistItem.mediaSource.url);
+        if (mPlaylistService == null) return;
+        FairSaveCount saves = FairSaveCount.get(getContext());
+        FairUnlock unlock = FairUnlock.get(getContext());
+        saves.whenReady(() -> {
+            if (mPlaylistService == null) return;
+            // Music Browser: dedupe the entire library, including moved songs, before the gate.
+            mPlaylistService.getAllPlaylistItems(existing -> {
+                if (mPlaylistService == null) return;
+                Set<String> pageSources = new HashSet<>();
+                Set<String> mediaSources = new HashSet<>();
+                for (PlaylistItem saved : existing) {
+                    pageSources.add(saved.pageSource.url);
+                    mediaSources.add(saved.mediaSource.url);
+                }
+                List<PlaylistItem> candidates = new ArrayList<>();
+                List<String> reserved = new ArrayList<>();
+                boolean refused = false;
+                for (PlaylistItem item : items) {
+                    String media = item.mediaSource.url;
+                    String page = item.pageSource.url;
+                    String source = page + "\n" + media;
+                    if (pageSources.contains(page) || (!media.isEmpty() && mediaSources.contains(media))
+                            || mMusicBrowserAddedSources.contains(source)) continue;
+                    if (!saves.reserve(source, unlock.isUnlocked())) {
+                        refused = true;
+                        continue;
                     }
-                    List<PlaylistItem> playlistItems = new ArrayList<>();
-                    for (PlaylistItem playlistItem : items) {
-                        // Check for duplicates in default playlist
-                        String mediaUrl = playlistItem.mediaSource.url;
-                        String pageUrl = playlistItem.pageSource.url;
-                        if (!pageSources.contains(pageUrl)
-                                && (mediaUrl.isEmpty() || !mediaSources.contains(mediaUrl))
-                                // Music Browser: two detections can race before either
-                                // add lands; remember what this session already added.
-                                && mMusicBrowserAddedSources.add(pageUrl + "\n" + mediaUrl)) {
-                            playlistItems.add(playlistItem);
-                            mediaSources.add(mediaUrl);
-                        }
-                    }
-                    if (playlistItems.size() > 0) {
-                        mPlaylistService.addMediaFiles(
-                                playlistItems.toArray(new PlaylistItem[0]),
-                                ConstantUtils.DEFAULT_PLAYLIST,
-                                true,
-                                addedItems -> {
-                                    if (addedItems.length > 0 && showSnackBars) {
-                                        showAddedToPlaylistSnackBar();
-                                    }
-                                });
-                    } else if (showSnackBars) {
-                        showAlreadyAddedToPlaylistSnackBar();
-                    }
-                });
+                    mMusicBrowserAddedSources.add(source);
+                    candidates.add(item);
+                    reserved.add(source);
+                    pageSources.add(page);
+                    mediaSources.add(media);
+                }
+                if (refused && (showSnackBars || unlock.shouldPresentAfterRefusedSave())) {
+                    FairUnlockSheet.show(getContext());
+                }
+                if (!candidates.isEmpty()) {
+                    mPlaylistService.addMediaFiles(candidates.toArray(new PlaylistItem[0]),
+                            ConstantUtils.DEFAULT_PLAYLIST, true, added -> {
+                                saves.finish(reserved, added.length);
+                                FairRecentSongs.record(added);
+                                // Native dedupe now owns successful IDs; failed adds may retry.
+                                mMusicBrowserAddedSources.removeAll(reserved);
+                                if (added.length > 0 && showSnackBars) showAddedToPlaylistSnackBar();
+                            });
+                } else if (showSnackBars && !refused) {
+                    showAlreadyAddedToPlaylistSnackBar();
+                }
+            });
+        });
     }
 
     public void addMediaToPlaylist() {
         Tab currentTab = getToolbarDataProvider().getTab();
-        if (mPlaylistService == null || currentTab == null) {
-            return;
-        }
-        mPlaylistService.addMediaFilesFromActiveTabToPlaylist(
-                ConstantUtils.DEFAULT_PLAYLIST,
-                true,
-                addedItems -> {
-                    if (addedItems.length > 0) {
-                        showAddedToPlaylistSnackBar();
-                    }
-                });
+        if (mPlaylistService == null || currentTab == null) return;
+        // Music Browser: never call the native bulk-add bypass (it can exceed the remaining slots).
+        // Discovery returns through onMediaFilesUpdated and uses the exact same per-item gate.
+        mFairManualAddRequested = true;
+        mPlaylistService.findMediaFilesFromActiveTab();
     }
 
     private void showAddedToPlaylistSnackBar() {
@@ -1743,11 +1752,13 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                                 .equals(currentTab.getUrl().getOrigin()))) {
             return;
         }
+        boolean manual = mFairManualAddRequested;
+        mFairManualAddRequested = false;
         if (playlistItems.length > 0 && !UrlUtilities.isNtpUrl(currentTab.getUrl().getSpec())) {
             mShouldShowPlaylistMenu = true;
             // Music Browser: played media is saved and downloaded silently,
             // no offer button.
-            addMediaToPlaylist(playlistItems, /* showSnackBars= */ false);
+            addMediaToPlaylist(playlistItems, manual);
         }
     }
 
