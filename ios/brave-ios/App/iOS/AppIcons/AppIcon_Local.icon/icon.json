@@ -3,12 +3,11 @@
   "fill": "system-light",
   "groups": [
     {
-      "blur-material": null,
       "layers": [
         {
           "fill": "automatic",
-          "image-name": "musicbrowser.png",
-          "name": "musicbrowser",
+          "image-name": "fairmusicbrowser.png",
+          "name": "fairmusicbrowser",
           "position": {
             "scale": 1,
             "translation-in-points": [

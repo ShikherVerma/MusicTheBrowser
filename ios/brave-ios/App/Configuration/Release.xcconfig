@@ -5,7 +5,8 @@
 #include "Base.xcconfig"
 
 // Music Browser rebrand (same identity as Debug.xcconfig)
-MOZ_BUNDLE_DISPLAY_NAME = Music: The Browser
+// Music Browser: short launcher name; full name stays in the stores.
+MOZ_BUNDLE_DISPLAY_NAME = Fair Music
 
 BRAVE_URL_SCHEME = musicbrowser
 
