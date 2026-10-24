@@ -725,6 +725,8 @@ if (current_toolchain == default_toolchain) {
   android_resources("fair_resources") {
     resource_overlay = true
     sources = [
+      "java/res_fair/drawable/chrome_product_vd_24.xml",
+      "java/res_fair/drawable/fair_music_note.xml",
       "java/res_fair/values-night/fair_colors.xml",
       "java/res_fair/values/fair_colors.xml",
       "java/res_fair/values/fair_dimens.xml",

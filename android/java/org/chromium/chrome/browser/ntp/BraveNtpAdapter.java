@@ -137,6 +137,11 @@ public class BraveNtpAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        // Music Browser: replace the otherwise-empty image-credit slot with Home.
+        if (holder instanceof FairHomeViewHolder) {
+            ((FairHomeViewHolder) holder).refresh();
+            return;
+        }
         if (holder instanceof StatsViewHolder) {
             StatsViewHolder statsViewHolder = (StatsViewHolder) holder;
 
@@ -423,9 +428,7 @@ public class BraveNtpAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             return new NewContentViewHolder(view);
 
         } else if (viewType == TYPE_IMAGE_CREDIT) {
-            view = LayoutInflater.from(parent.getContext())
-                           .inflate(R.layout.ntp_image_credit, parent, false);
-            return new ImageCreditViewHolder(view);
+            return new FairHomeViewHolder(mActivity, mGlide);
 
         } else if (viewType == TYPE_NEWS_OPTIN) {
             view = LayoutInflater.from(parent.getContext())
@@ -447,6 +450,19 @@ public class BraveNtpAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                            .inflate(R.layout.brave_news_row, parent, false);
             return new NewsViewHolder(view);
         }
+    }
+
+    // Music Browser: the holder owns its mojo observer only while Home is visible.
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if (holder instanceof FairHomeViewHolder) ((FairHomeViewHolder) holder).attach();
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+        if (holder instanceof FairHomeViewHolder) ((FairHomeViewHolder) holder).detach();
+        super.onViewDetachedFromWindow(holder);
     }
 
     @Override

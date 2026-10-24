@@ -6,6 +6,8 @@
 package org.chromium.chrome.browser.playlist;
 
 import android.content.Intent;
+import android.content.Context;
+import android.content.ComponentName;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -14,6 +16,10 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.core.view.ViewCompat;
+import androidx.core.content.ContextCompat;
+import androidx.media3.common.MediaItem;
+import androidx.media3.session.MediaBrowser;
+import androidx.media3.session.SessionToken;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -24,6 +30,7 @@ import com.brave.playlist.PlaylistViewModel;
 import com.brave.playlist.enums.PlaylistOptionsEnum;
 import com.brave.playlist.fragment.AllPlaylistFragment;
 import com.brave.playlist.fragment.PlaylistFragment;
+import com.brave.playlist.fragment.PlaylistPlayerFragment;
 import com.brave.playlist.listener.PlaylistOptionsListener;
 import com.brave.playlist.local_database.PlaylistRepository;
 import com.brave.playlist.model.HlsContentProgressModel;
@@ -34,6 +41,8 @@ import com.brave.playlist.model.PlaylistOptionsModel;
 import com.brave.playlist.playback_service.VideoPlaybackService;
 import com.brave.playlist.util.ConstantUtils;
 import com.brave.playlist.util.PlaylistUtils;
+import com.brave.playlist.util.MediaItemUtil;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.brave.playlist.view.bottomsheet.MoveOrCopyToPlaylistBottomSheet;
 
 import org.chromium.base.BraveFeatureList;
@@ -63,6 +72,7 @@ import org.chromium.playlist.mojom.PlaylistService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class PlaylistHostActivity extends AsyncInitializationActivity
         implements ConnectionErrorHandler, PlaylistOptionsListener,
@@ -71,6 +81,16 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
     private PlaylistService mPlaylistService;
     private PlaylistViewModel mPlaylistViewModel;
     private PlaylistServiceObserverImpl mPlaylistServiceObserver;
+    // Music Browser: our own explicit item ID, not an undocumented AAR intent extra.
+    private static final String FAIR_RECENT_ID = "fair.recent_song_id";
+    private ListenableFuture<MediaBrowser> mFairBrowser;
+
+    public static void openRecent(Context context, String id) {
+        Intent intent = new Intent(context, PlaylistHostActivity.class);
+        intent.putExtra(ConstantUtils.PLAYLIST_ID, ConstantUtils.DEFAULT_PLAYLIST);
+        intent.putExtra(FAIR_RECENT_ID, id);
+        context.startActivity(intent);
+    }
 
     @Override
     public void onConnectionError(MojoException e) {
@@ -94,6 +114,8 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
                         .getPlaylistService(
                                 getProfileProviderSupplier().get().getOriginalProfile(), this);
         addPlaylistObserver();
+        FairSaveCount.get(this).initialize(mPlaylistService);
+        FairUnlock.get(this);
     }
 
     private void addPlaylistObserver() {
@@ -339,6 +361,12 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
                         });
 
         if (getIntent() != null) {
+            String recent = getIntent().getStringExtra(FAIR_RECENT_ID);
+            if (recent != null) {
+                getIntent().removeExtra(FAIR_RECENT_ID);
+                showRecentSong(recent);
+                return;
+            }
             if (!TextUtils.isEmpty(getIntent().getAction())
                     && getIntent().getAction().equals(ConstantUtils.PLAYLIST_ACTION)) {
                 showPlaylistForPlayer();
@@ -352,6 +380,61 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
                 }
             }
         }
+    }
+
+    // Music Browser: pinned AAR APIs confirmed with javap (SHA-256 1ccbd933…).
+    // Await our MediaBrowser connection rather than racing the AAR fragment's private future.
+    private void showRecentSong(String id) {
+        if (mPlaylistService == null) return;
+        mPlaylistService.getPlaylistItem(id, item -> {
+            if (item == null || mPlaylistService == null) {
+                showPlaylist(ConstantUtils.DEFAULT_PLAYLIST, false);
+                return;
+            }
+            String parent = item.parents.length > 0 ? item.parents[0] : ConstantUtils.DEFAULT_PLAYLIST;
+            mPlaylistService.getPlaylist(parent, playlist -> {
+                if (playlist == null || isFinishing() || isDestroyed()) return;
+                List<PlaylistItemModel> models = new ArrayList<>();
+                List<MediaItem> media = new ArrayList<>();
+                int selected = -1;
+                for (PlaylistItem song : playlist.items) {
+                    PlaylistItemModel model = new PlaylistItemModel(song.id, playlist.id, song.name,
+                            song.pageSource.url, song.mediaPath.url, song.hlsMediaPath.url,
+                            song.mediaSource.url, song.thumbnailPath.url, song.author, song.duration,
+                            song.lastPlayedPosition, song.mediaFileBytes, song.cached, false);
+                    // Include the tapped item while saving (MediaItemUtil uses its stream URL),
+                    // plus available offline songs. Player row indices then match queue indices.
+                    if (!song.id.equals(id) && !PlaylistUtils.isPlaylistItemCached(model)) continue;
+                    if (song.id.equals(id)) selected = media.size();
+                    models.add(model);
+                    media.add(MediaItemUtil.buildMediaItem(model, playlist.id, playlist.name));
+                }
+                if (selected < 0) { showPlaylist(parent, false); return; }
+                PlaylistModel queue = new PlaylistModel(playlist.id, playlist.name, models);
+                int index = selected;
+                mFairBrowser = new MediaBrowser.Builder(this,
+                        new SessionToken(this, new ComponentName(this, VideoPlaybackService.class)))
+                        .buildAsync();
+                mFairBrowser.addListener(() -> {
+                    if (isFinishing() || isDestroyed()
+                            || getSupportFragmentManager().isStateSaved()) return;
+                    try {
+                        MediaBrowser browser = mFairBrowser.get();
+                        browser.setMediaItems(media, index, 0);
+                        browser.setShuffleModeEnabled(false);
+                        browser.prepare();
+                        browser.play();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(android.R.id.content, PlaylistPlayerFragment.newInstance(queue))
+                                .addToBackStack(PlaylistFragment.class.getSimpleName()).commit();
+                    } catch (ExecutionException failed) {
+                        showPlaylist(parent, false);
+                    } catch (InterruptedException interrupted) {
+                        Thread.currentThread().interrupt();
+                    }
+                }, ContextCompat.getMainExecutor(this));
+            });
+        });
     }
 
     private void showPlaylist(String playlistId, boolean shouldFallback) {
@@ -548,6 +631,7 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
 
     @Override
     public void onDestroy() {
+        if (mFairBrowser != null) MediaBrowser.releaseFuture(mFairBrowser);
         if (mPlaylistService != null) {
             mPlaylistService.close();
             mPlaylistService = null;

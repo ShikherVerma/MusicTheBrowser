@@ -14,4 +14,13 @@
     <string name="fair_price_unavailable">Price unavailable</string>
     <string name="fair_restore_purchase">Restore purchase</string>
     <string name="fair_unlock_later">Not now</string>
+    <string name="fair_home_title">Play some music</string>
+    <string name="fair_home_intro">Search for a song or open any music site. Everything you play is saved to Music, ready to play offline.</string>
+    <string name="fair_recent_saves">Recently saved</string>
+    <string name="fair_show_all_music">Show all in Music</string>
+    <string name="fair_not_saved">Not saved</string>
+    <string name="fair_saving">Saving…</string>
+    <string name="fair_saving_percent">Saving… %1$d%%</string>
+    <string name="playlist_browse_and_add">Your music lives here</string>
+    <string name="playlist_browse_and_add_message">Play music on any website and it\'s saved here automatically, ready to play offline.</string>
 </resources>
