@@ -2887,6 +2887,11 @@ extension BrowserViewController: ToolbarUrlActionsDelegate {
 }
 
 extension BrowserViewController: NewTabPageDelegate {
+  // Music Browser: Home enters Music without navigating away from the current tab.
+  func openFairMusic(_ item: PlaylistInfo?) {
+    openPlaylist(tab: nil, item: item)
+  }
+
   func navigateToInput(_ input: String, inNewTab: Bool, switchingToPrivateMode: Bool) {
     handleURLInput(
       input,

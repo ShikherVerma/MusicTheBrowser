@@ -106,6 +106,8 @@ protocol NTPObservableSectionProvider: NTPSectionProvider {
 
 protocol NewTabPageDelegate: AnyObject {
   func focusURLBar()
+  // Music Browser: recent saves open the existing player on the selected item.
+  func openFairMusic(_ item: PlaylistInfo?)
   func navigateToInput(_ input: String, inNewTab: Bool, switchingToPrivateMode: Bool)
   func handleFavoriteAction(favorite: Favorite, action: BookmarksAction)
   func brandedImageCalloutActioned(_ state: BrandedImageCalloutState)
@@ -197,47 +199,10 @@ class NewTabPageViewController: UIViewController {
     Preferences.NewTabPage.topsitesMode.observe(from: self)
 
     sections = [
-      StatsSectionProvider(
-        isPrivateBrowsing: tab.isPrivate,
-        openPrivacyHubPressed: { [weak self] in
-          guard let self, let tab = browserTab else { return }
-          if privateBrowsingManager.isPrivateBrowsing == true {
-            return
-          }
-
-          let isOriginPurchased =
-            BraveOriginServiceFactory.get(profile: tab.profile)?.isPurchased() == true
-          let host = UIHostingController(
-            rootView: PrivacyReportsManager.prepareView(
-              isPrivateBrowsing: privateBrowsingManager.isPrivateBrowsing,
-              isOriginPurchased: isOriginPurchased
-            )
-          )
-          host.rootView.onDismiss = { [weak self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-              guard let self = self else { return }
-
-              // Handle App Rating
-              // User finished viewing the privacy report (tapped close)
-              AppReviewManager.shared.handleAppReview(for: .revised, using: self)
-            }
-          }
-
-          host.rootView.openPrivacyReportsUrl = { [weak self] in
-            self?.delegate?.navigateToInput(
-              URL.brave.privacyFeatures.absoluteString,
-              inNewTab: false,
-              // Privacy Reports view is unavailable in private mode.
-              switchingToPrivateMode: false
-            )
-          }
-
-          present(host, animated: true)
-        },
-        hidePrivacyHubPressed: { [weak self] in
-          self?.hidePrivacyHub()
-        }
-      ),
+      // Music Browser: Home replaces the old privacy statistics card.
+      FairHomeSectionProvider { [weak self] item in
+        self?.delegate?.openFairMusic(item.map { PlaylistInfo(item: $0) })
+      },
       FavoritesSectionProvider(
         action: { [weak self] bookmark, action in
           self?.handleFavoriteAction(favorite: bookmark, action: action)
