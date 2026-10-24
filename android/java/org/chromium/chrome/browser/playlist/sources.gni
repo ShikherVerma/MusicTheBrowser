@@ -13,4 +13,5 @@ brave_app_playlist_deps = [
   "//brave/third_party/android_deps:com_brave_playlist_java",
   "//third_party/androidx:androidx_media3_media3_common_java",
   "//third_party/androidx:androidx_media3_media3_session_java",
+  "//third_party/androidx:androidx_media3_media3_ui_java",
 ]

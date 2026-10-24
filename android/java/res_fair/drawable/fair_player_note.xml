@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Music Browser: monochrome note placeholder on a flat Carbon layer. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp" android:height="40dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="@color/fair_player_secondary"
+        android:pathData="M12,3v10.55A4,4 0,1 0,14 17V7h4V3z" />
+</vector>

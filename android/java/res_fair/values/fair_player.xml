@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Music Browser: the player stays dark independently of the library theme. -->
+<resources>
+    <color name="fair_player_background">#161616</color>
+    <color name="fair_player_layer">#262626</color>
+    <color name="fair_player_text">#f4f4f4</color>
+    <color name="fair_player_secondary">#c6c6c6</color>
+</resources>

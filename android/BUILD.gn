@@ -725,10 +725,21 @@ if (current_toolchain == default_toolchain) {
   android_resources("fair_resources") {
     resource_overlay = true
     sources = [
+      "java/res_fair/layout/playlist_item_layout.xml",
+      "java/res_fair/layout/fragment_playlist.xml",
+      "java/res_fair/layout/fragment_empty_playlist.xml",
+      "java/res_fair/layout/fragment_playlist_player.xml",
+      "java/res_fair/layout/player_bottom_view.xml",
       "java/res_fair/drawable/chrome_product_vd_24.xml",
       "java/res_fair/drawable/fair_music_note.xml",
+      "java/res_fair/drawable/fair_player_note.xml",
       "java/res_fair/values-night/fair_colors.xml",
       "java/res_fair/values/fair_colors.xml",
+      "java/res_fair/drawable/rounded_bg_16.xml",
+      "java/res_fair/drawable/ic_button_bg.xml",
+      "java/res_fair/drawable/ic_button_unfilled_bg.xml",
+      "java/res_fair/drawable/fair_player_progress.xml",
+      "java/res_fair/values/fair_player.xml",
       "java/res_fair/values/fair_dimens.xml",
       "java/res_fair/values/fair_strings.xml",
     ]

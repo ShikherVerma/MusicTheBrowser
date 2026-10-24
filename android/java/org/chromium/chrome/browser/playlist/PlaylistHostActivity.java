@@ -8,16 +8,22 @@ package org.chromium.chrome.browser.playlist;
 import android.content.Intent;
 import android.content.Context;
 import android.content.ComponentName;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
+import androidx.media3.ui.AspectRatioFrameLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
 import androidx.core.view.WindowInsetsCompat;
@@ -43,6 +49,7 @@ import com.brave.playlist.util.ConstantUtils;
 import com.brave.playlist.util.PlaylistUtils;
 import com.brave.playlist.util.MediaItemUtil;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.bumptech.glide.Glide;
 import com.brave.playlist.view.bottomsheet.MoveOrCopyToPlaylistBottomSheet;
 
 import org.chromium.base.BraveFeatureList;
@@ -84,6 +91,8 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
     // Music Browser: our own explicit item ID, not an undocumented AAR intent extra.
     private static final String FAIR_RECENT_ID = "fair.recent_song_id";
     private ListenableFuture<MediaBrowser> mFairBrowser;
+    private ImageView mFairArtwork;
+    private Fragment mFairPlayerFragment;
 
     public static void openRecent(Context context, String id) {
         Intent intent = new Intent(context, PlaylistHostActivity.class);
@@ -169,7 +178,16 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
                     @Override
                     public void onFragmentViewCreated(FragmentManager manager, Fragment fragment,
                             View view, Bundle state) {
+                        if (fragment instanceof PlaylistPlayerFragment) decorateFairPlayer(fragment, view);
+                        updateFairLibraryLimit();
                         strip.post(reserveStrip);
+                    }
+                    @Override
+                    public void onFragmentViewDestroyed(FragmentManager manager, Fragment fragment) {
+                        if (fragment == mFairPlayerFragment) {
+                            mFairArtwork = null;
+                            mFairPlayerFragment = null;
+                        }
                     }
                 }, false);
         strip.post(reserveStrip);
@@ -181,6 +199,8 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
         if (ChromeFeatureList.isEnabled(BraveFeatureList.BRAVE_PLAYLIST)) {
             initPlaylistService();
         }
+        FairSaveCount.get(this).changes().observe(this, value -> updateFairLibraryLimit());
+        FairUnlock.get(this).changes().observe(this, value -> updateFairLibraryLimit());
         mPlaylistViewModel =
                 new ViewModelProvider(PlaylistHostActivity.this).get(PlaylistViewModel.class);
 
@@ -382,6 +402,122 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
         }
     }
 
+    // Music Browser: lifetime count in the library header, not the current folder size.
+    private void updateFairLibraryLimit() {
+        View limit = findViewById(R.id.fair_library_limit_container);
+        if (limit == null) return;
+        FairSaveCount saves = FairSaveCount.get(this);
+        FairUnlock unlock = FairUnlock.get(this);
+        limit.setVisibility(!unlock.isUnlocked() && saves.count() >= (int) Math.ceil(saves.limit() * 0.9)
+                ? View.VISIBLE : View.GONE);
+        TextView value = findViewById(R.id.fair_library_limit);
+        java.text.NumberFormat format = java.text.NumberFormat.getIntegerInstance();
+        value.setText(getString(R.string.fair_free_songs,
+                format.format(saves.count()), format.format(saves.limit())));
+        findViewById(R.id.fair_library_unlock).setOnClickListener(view -> FairUnlockSheet.show(this));
+        findViewById(R.id.fair_library_notice).setVisibility(
+                unlock.hasUnlockNotice() ? View.VISIBLE : View.GONE);
+    }
+
+    // Music Browser: UI-only audio-first artwork; the AAR keeps all playback controls/engine.
+    private ListenableFuture<MediaBrowser> fairBrowser() {
+        if (mFairBrowser == null) {
+            mFairBrowser = new MediaBrowser.Builder(this,
+                    new SessionToken(this, new ComponentName(this, VideoPlaybackService.class)))
+                    .buildAsync();
+            ListenableFuture<MediaBrowser> future = mFairBrowser;
+            future.addListener(() -> {
+                if (isDestroyed()) return;
+                try {
+                    MediaBrowser browser = future.get();
+                    browser.addListener(new Player.Listener() {
+                        @Override public void onMediaItemTransition(MediaItem item, int reason) {
+                            updateFairArtwork(item);
+                        }
+                    });
+                    updateFairArtwork(browser.getCurrentMediaItem());
+                } catch (ExecutionException failed) {
+                    // Keep the flat note placeholder; the AAR can still connect independently.
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                }
+            }, ContextCompat.getMainExecutor(this));
+        }
+        return mFairBrowser;
+    }
+
+    private void updateFairArtwork(MediaItem item) {
+        if (mFairArtwork == null || isDestroyed()) return;
+        Glide.with(this).load(item == null ? null : item.mediaMetadata.artworkUri)
+                .centerCrop().dontAnimate().placeholder(R.drawable.fair_player_note)
+                .error(R.drawable.fair_player_note).into(mFairArtwork);
+    }
+
+    private void decorateFairPlayer(Fragment fragment, View view) {
+        mFairPlayerFragment = fragment;
+        view.setBackgroundColor(getColor(R.color.fair_player_background));
+        View toolbar = view.findViewById(R.id.playlistToolbar);
+        if (toolbar != null) toolbar.setBackgroundColor(getColor(R.color.fair_player_background));
+        applyFairPlayerText(view);
+        int[] toolbarIcons = {R.id.ivBackToolbarPlaylist, R.id.ivOptionsToolbarPlaylist};
+        for (int id : toolbarIcons) {
+            ImageView icon = view.findViewById(id);
+            if (icon != null) icon.setImageTintList(ColorStateList.valueOf(getColor(R.color.fair_player_text)));
+        }
+        AspectRatioFrameLayout frame = view.findViewById(R.id.aspect_ratio_frame_layout);
+        if (frame == null) return;
+        int margin = Math.round(16 * getResources().getDisplayMetrics().density);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) frame.getLayoutParams();
+        params.leftMargin = margin;
+        params.rightMargin = margin;
+        frame.setLayoutParams(params);
+        frame.setAspectRatio(1f);
+        frame.addOnLayoutChangeListener((v, left, top, right, bottom, ol, ot, or, ob) -> {
+            if (frame.getWidth() > 0 && frame.getLayoutParams().height != frame.getWidth()) {
+                ViewGroup.LayoutParams square = frame.getLayoutParams();
+                square.height = frame.getWidth();
+                frame.setLayoutParams(square);
+                frame.setAspectRatio(1f);
+            }
+        });
+        mFairArtwork = new ImageView(this);
+        mFairArtwork.setScaleType(ImageView.ScaleType.CENTER);
+        mFairArtwork.setBackgroundColor(getColor(R.color.fair_player_layer));
+        mFairArtwork.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        mFairArtwork.setImageResource(R.drawable.fair_player_note);
+        frame.addView(mFairArtwork, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        ListenableFuture<MediaBrowser> future = fairBrowser();
+        future.addListener(() -> {
+            if (isDestroyed()) return;
+            try { updateFairArtwork(future.get().getCurrentMediaItem()); }
+            catch (ExecutionException failed) { }
+            catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); }
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void applyFairPlayerText(View view) {
+        if (view instanceof TextView) {
+            int id = view.getId();
+            boolean meta = id == R.id.tvMediaDuration || id == R.id.tvMediaFileSize
+                    || id == R.id.tvMediaDownloadProgress || id == R.id.tvVideoTimeElapsed
+                    || id == R.id.tvVideoTimeRemaining;
+            ((TextView) view).setTextColor(getColor(meta
+                    ? R.color.fair_player_secondary : R.color.fair_player_text));
+        }
+        if (view instanceof RecyclerView) {
+            ((RecyclerView) view).addOnChildAttachStateChangeListener(
+                    new RecyclerView.OnChildAttachStateChangeListener() {
+                        @Override public void onChildViewAttachedToWindow(View child) { applyFairPlayerText(child); }
+                        @Override public void onChildViewDetachedFromWindow(View child) { }
+                    });
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) applyFairPlayerText(group.getChildAt(i));
+        }
+    }
+
     // Music Browser: pinned AAR APIs confirmed with javap (SHA-256 1ccbd933…).
     // Await our MediaBrowser connection rather than racing the AAR fragment's private future.
     private void showRecentSong(String id) {
@@ -412,14 +548,12 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
                 if (selected < 0) { showPlaylist(parent, false); return; }
                 PlaylistModel queue = new PlaylistModel(playlist.id, playlist.name, models);
                 int index = selected;
-                mFairBrowser = new MediaBrowser.Builder(this,
-                        new SessionToken(this, new ComponentName(this, VideoPlaybackService.class)))
-                        .buildAsync();
-                mFairBrowser.addListener(() -> {
+                ListenableFuture<MediaBrowser> browserFuture = fairBrowser();
+                browserFuture.addListener(() -> {
                     if (isFinishing() || isDestroyed()
                             || getSupportFragmentManager().isStateSaved()) return;
                     try {
-                        MediaBrowser browser = mFairBrowser.get();
+                        MediaBrowser browser = browserFuture.get();
                         browser.setMediaItems(media, index, 0);
                         browser.setShuffleModeEnabled(false);
                         browser.prepare();
@@ -632,6 +766,7 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
     @Override
     public void onDestroy() {
         if (mFairBrowser != null) MediaBrowser.releaseFuture(mFairBrowser);
+        FairUnlock.get(this).clearUnlockNotice();
         if (mPlaylistService != null) {
             mPlaylistService.close();
             mPlaylistService = null;

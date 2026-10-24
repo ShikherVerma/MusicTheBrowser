@@ -33,6 +33,7 @@ public final class FairUnlock {
     private final MutableLiveData<Integer> mChanges = new MutableLiveData<>(0);
     private ProductDetails mProduct;
     private boolean mUnlocked;
+    private boolean mJustUnlocked;
     private boolean mConnecting;
     private boolean mRestoreRequested;
     private boolean mBusy;
@@ -63,6 +64,8 @@ public final class FairUnlock {
     }
 
     public boolean isUnlocked() { return mUnlocked; }
+    public boolean hasUnlockNotice() { return mJustUnlocked; }
+    public void clearUnlockNotice() { mJustUnlocked = false; }
     public boolean isBusy() { return mBusy || mConnecting; }
     public String error() { return mError; }
     public LiveData<Integer> changes() { return mChanges; }
@@ -161,6 +164,7 @@ public final class FairUnlock {
             }
         }
         if (found || fullQuery) {
+            if (found && !mUnlocked) mJustUnlocked = true;
             mUnlocked = found;
             ChromeSharedPreferences.getInstance().writeBoolean(CACHE_KEY, mUnlocked);
         }

@@ -13,6 +13,7 @@ import BraveWallet
 import Combine
 import Data
 import DataImporter
+import DesignSystem
 import Growth
 import LocalAuthentication
 import NetworkExtension
@@ -1644,7 +1645,7 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
             : "\(FairSaveCount.shared.count.formatted()) of \(FairSaveCount.shared.limit.formatted()) free",
           selection: { [weak self] in self?.showFairUnlock() },
           accessory: FairUnlock.shared.isUnlocked ? .none : .disclosureIndicator,
-          cellClass: MultilineValue1Cell.self
+          cellClass: FairAboutValueCell.self
         ),
         Row(
           text: "Restore purchase",
@@ -1655,7 +1656,8 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
           cellClass: MultilineValue1Cell.self
         ),
         Row(
-          text: version,
+          text: "Version",
+          detailText: version,
           selection: { [unowned self, weak tabManager] in
             let device = UIDevice.current
             let actionSheet = UIAlertController(
@@ -1707,7 +1709,7 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
             )
             self.navigationController?.present(actionSheet, animated: true, completion: nil)
           },
-          cellClass: MultilineValue1Cell.self
+          cellClass: FairAboutValueCell.self
         ),
         Row(
           text: Strings.privacyPolicy,
@@ -2218,5 +2220,26 @@ private class AppIconCell: UITableViewCell, Cell {
     content.imageProperties.strokeWidth = 1
     contentConfiguration = content
     accessoryType = .disclosureIndicator
+  }
+}
+
+// Music Browser: productive body labels and wrapping mono values in the owned About rows.
+private final class FairAboutValueCell: UITableViewCell, Cell {
+  override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    super.init(style: .value1, reuseIdentifier: reuseIdentifier)
+    textLabel?.numberOfLines = 0
+    detailTextLabel?.numberOfLines = 0
+    textLabel?.adjustsFontForContentSizeCategory = true
+    detailTextLabel?.adjustsFontForContentSizeCategory = true
+  }
+
+  required init?(coder: NSCoder) { fatalError() }
+
+  func configure(row: Row) {
+    textLabel?.text = row.text
+    detailTextLabel?.text = row.detailText
+    textLabel?.font = FairType.bodyCompact02.uiFont(compatibleWith: traitCollection)
+    detailTextLabel?.font = FairType.code02.uiFont(compatibleWith: traitCollection)
+    accessoryType = row.accessory.type
   }
 }
