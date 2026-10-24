@@ -8,9 +8,15 @@ package org.chromium.chrome.browser.playlist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -101,6 +107,7 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
         // Music Browser: Browse returns to the same tab, without recreating the browser.
         FairModeSwitcher modeSwitcher = findViewById(R.id.fair_music_mode_switcher);
         modeSwitcher.setSelection(true, this::finish);
+        installFairModeStrip();
         int padding = Math.round(8 * getResources().getDisplayMetrics().density);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fair_music_mode_strip),
                 (view, insets) -> {
@@ -110,6 +117,40 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
                     return insets;
                 });
         onInitialLayoutInflationComplete();
+    }
+
+    // Music Browser: the AAR player replaces android.R.id.content, not our fragment container.
+    // Keep the mode strip as a sibling above every fragment, and reserve its measured height.
+    private void installFairModeStrip() {
+        FrameLayout content = findViewById(android.R.id.content);
+        View strip = findViewById(R.id.fair_music_mode_strip);
+        ((ViewGroup) strip.getParent()).removeView(strip);
+        content.addView(strip, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM));
+        Runnable reserveStrip = () -> {
+            for (int i = 0; i < content.getChildCount(); i++) {
+                View child = content.getChildAt(i);
+                if (child == strip) continue;
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) child.getLayoutParams();
+                if (params.bottomMargin != strip.getHeight()) {
+                    params.bottomMargin = strip.getHeight();
+                    child.setLayoutParams(params);
+                }
+            }
+            strip.bringToFront();
+        };
+        strip.addOnLayoutChangeListener((view, left, top, right, bottom,
+                oldLeft, oldTop, oldRight, oldBottom) -> reserveStrip.run());
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentViewCreated(FragmentManager manager, Fragment fragment,
+                            View view, Bundle state) {
+                        strip.post(reserveStrip);
+                    }
+                }, false);
+        strip.post(reserveStrip);
     }
 
     @Override
