@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.view.View;
 
 import com.google.android.material.color.DynamicColors;
@@ -51,7 +50,8 @@ public final class BraveDynamicColors {
      * {@link #isDynamicColorsEnabled()} is the preferred method for runtime behavior checks.
      */
     public static boolean isDynamicColorsAvailable() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+        // Music Browser: Carbon is fixed across wallpapers, in both light and dark mode.
+        return false;
     }
 
     /**

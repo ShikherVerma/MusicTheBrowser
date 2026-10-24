@@ -11,13 +11,17 @@ import UIKit
 extension Color {
   /// Initialize a `Color` with a color resource.
   public init(braveSystemName resource: FigmaColorResource) {
-    self.init(resource.name, bundle: .nalaAssets)
+    // Music Browser: prefer the Carbon override, retaining Nala as the upstream fallback.
+    self.init(uiColor: UIColor(braveSystemName: resource))
   }
 }
 
 extension UIColor {
   /// Initialize a `UIColor` with a color resource.
   public convenience init(braveSystemName resource: FigmaColorResource) {
-    self.init(named: resource.name, in: .nalaAssets, compatibleWith: nil)!
+    // Music Browser: preserve dynamic light/dark colours when selecting the asset bundle.
+    let bundle: Bundle = UIColor(named: resource.name, in: .module, compatibleWith: nil) != nil
+      ? .module : .nalaAssets
+    self.init(named: resource.name, in: bundle, compatibleWith: nil)!
   }
 }

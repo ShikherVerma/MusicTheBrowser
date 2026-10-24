@@ -318,7 +318,9 @@ var package = Package(
     ),
     .target(
       name: "DesignSystem",
-      dependencies: ["Then", "NalaAssets"]
+      dependencies: ["Then", "NalaAssets"],
+      // Music Browser: Swift-only Carbon override; no Nala/core rebuild required.
+      resources: [.process("Colors/Carbon.xcassets")]
     ),
     .binaryTarget(name: "NalaAssets", path: "../../../out/ios_current_link/NalaAssets.xcframework"),
     .binaryTarget(

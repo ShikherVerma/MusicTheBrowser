@@ -21,6 +21,8 @@ brave_android_manifest_includes = [
 ]
 
 brave_chrome_java_deps = [
+  # Music Browser: overlay depends on chrome_app_java_resources so Carbon wins.
+  "//brave/android:fair_resources",
   "//brave/android:qrreader_java",
   "//brave/android/java/org/chromium/chrome/browser/accessibility:java",
   "//brave/android/java/org/chromium/chrome/browser/brave_search:java",
