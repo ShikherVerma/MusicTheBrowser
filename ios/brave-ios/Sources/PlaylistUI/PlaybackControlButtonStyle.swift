@@ -77,12 +77,12 @@ struct PlaybackControlButtonStyle: ButtonStyle {
       .font(.system(fontStyle))
       .frame(height: multiplier * length)
       .contentShape(.rect)
-      .contentShape(.hoverEffect, .rect(cornerRadius: 8, style: .continuous).inset(by: -8))
+      .contentShape(.hoverEffect, .rect.inset(by: -8))
       .foregroundStyle(.tint)
       .hoverEffect()
       .background {
         if isPressed {
-          RoundedRectangle(cornerRadius: 8, style: .continuous)
+          Rectangle()
             .foregroundStyle(.background)
             // May want to reconsider this later and just add 8pt padding to button itself
             .padding(-8)

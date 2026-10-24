@@ -61,7 +61,8 @@ class TopToolbarView: UIView, ToolbarProtocol {
   struct UX {
     static let locationPadding: CGFloat = 8
     static let locationHeight: CGFloat = 44
-    static let textFieldCornerRadius: CGFloat = 10
+    // Music Browser: square Carbon address field.
+    static let textFieldCornerRadius: CGFloat = 0
   }
 
   // MARK: URLBarButton

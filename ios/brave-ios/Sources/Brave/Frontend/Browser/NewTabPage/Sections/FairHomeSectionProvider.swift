@@ -175,7 +175,7 @@ private struct FairRecentSongRow: View {
       if output.id == item.uuid { cacheState = output.state }
     }
     .onReceive(PlaylistManager.shared.downloadProgressUpdated) { output in
-      if output.id == item.uuid { progress = output.percentComplete }
+      if output.id == item.uuid { progress = output.percentComplete / 100.0 }
     }
   }
 }

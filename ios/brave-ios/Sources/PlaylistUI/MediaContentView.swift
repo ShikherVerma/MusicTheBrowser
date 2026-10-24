@@ -6,6 +6,7 @@
 import AVKit
 import BraveUI
 import Data
+import DesignSystem
 import Foundation
 import Strings
 import SwiftUI
@@ -59,7 +60,7 @@ struct MediaContentView: View {
         }
       if !isFullScreen {
         PlaybackControlsView(model: model, selectedItemTitle: selectedItem.name)
-          .padding(24)
+          .padding(16)
           .playlistSheetDetentAnchor(id: .mediaControls)
       }
     }
@@ -208,7 +209,7 @@ extension MediaContentView {
         HStack(alignment: .firstTextBaseline) {
           Text(selectedItemTitle)
             .foregroundStyle(Color(braveSystemName: .textPrimary))
-            .font(.headline)
+            .fairFont(.heading02)
             .frame(maxWidth: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
             .lineLimit(1)
@@ -387,23 +388,12 @@ extension MediaContentView {
 /// look like music rather than an empty black video surface.
 struct MusicBrowserArtworkPlaceholder: View {
   var body: some View {
-    GeometryReader { proxy in
-      gradient.overlay {
+    // Music Browser: flat Carbon placeholder, never a gradient.
+    Color(braveSystemName: .containerHighlight)
+      .overlay {
         Image(systemName: "music.note")
-          .font(.system(size: min(proxy.size.width, proxy.size.height) * 0.4))
-          .foregroundStyle(Color(red: 0.12, green: 0.61, blue: 1.0))
+          .font(.system(size: 40, weight: .light))
+          .foregroundStyle(Color(braveSystemName: .textSecondary))
       }
-    }
-  }
-
-  private var gradient: some View {
-    LinearGradient(
-      colors: [
-        Color(red: 0.16, green: 0.17, blue: 0.20),
-        Color(red: 0.06, green: 0.06, blue: 0.08),
-      ],
-      startPoint: .top,
-      endPoint: .bottom
-    )
   }
 }

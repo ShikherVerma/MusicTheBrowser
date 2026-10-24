@@ -119,7 +119,8 @@ class SearchURLBarInputView: UIView {
     $0.setContentHuggingPriority(.defaultHigh, for: .horizontal)
   }
 
-  private let locationContainer = LocationContainerView()
+  // Music Browser: this container is the editable, focused address field.
+  private let locationContainer = LocationContainerView().then { $0.isFieldFocused = true }
 
   private let mainStackView = UIStackView().then {
     $0.spacing = 8

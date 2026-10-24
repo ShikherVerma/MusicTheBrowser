@@ -17,13 +17,13 @@ extension Strings {
     static let noMediaToPickFromEmptyState = NSLocalizedString(
       "playlist.noMediaToPickFromEmptyState",
       bundle: .module,
-      value: "Add media from your favorite sites and it’ll play here.",
+      value: "Play music on any website and it's saved here automatically, ready to play offline.",
       comment: "Shown when there is no content available to play for a given folder"
     )
     static let noMediaSelectedEmptyState = NSLocalizedString(
       "playlist.noMediaSelectedEmptyState",
       bundle: .module,
-      value: "Tap videos from your playlist to play.",
+      value: "Choose a song from your music to play.",
       comment: "Shown when the user has not selected any media to play."
     )
     static let sleepTimerEndOfItem = NSLocalizedString(

@@ -289,18 +289,23 @@ struct PlaylistContentUnavailableView: View {
   var isPlaylistEmpty: Bool
 
   var body: some View {
-    VStack(spacing: 24) {
-      Image(.emptyPlaylist)
+    // Music Browser: same leading-aligned empty state as the music list.
+    VStack(alignment: .leading, spacing: 16) {
+      Image(systemName: "music.note")
+        .font(.system(size: 40, weight: .light))
+        .foregroundStyle(Color(braveSystemName: .textSecondary))
+      Text(isPlaylistEmpty ? "Your music lives here" : "Choose a song")
+        .fairFont(.heading03)
       Text(
         isPlaylistEmpty
           ? Strings.Playlist.noMediaToPickFromEmptyState
           : Strings.Playlist.noMediaSelectedEmptyState
       )
-      .multilineTextAlignment(.center)
-      .foregroundStyle(Color(braveSystemName: .textTertiary))
-      .frame(maxWidth: .infinity)
+      .fairFont(.body01)
+      .foregroundStyle(Color(braveSystemName: .textSecondary))
     }
-    .padding(40)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(16)
     .playlistSheetDetentAnchor(id: .emptyPlaylistContent)
     .frame(maxHeight: .infinity, alignment: .top)
     .background(Color(braveSystemName: .containerBackground))

@@ -3,6 +3,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import DesignSystem
 import Foundation
 import Strings
 import SwiftUI
@@ -28,23 +29,23 @@ struct PlaylistItemView: View {
   var body: some View {
     HStack(spacing: 12) {
       Color.clear
-        .aspectRatio(1.333, contentMode: .fit)
-        .frame(height: 90)
+        .frame(width: 48, height: 48)
         .overlay {
           if let assetURL, let pageURL {
             MediaThumbnail(assetURL: assetURL, pageURL: pageURL)
           }
         }
         .background(Color(braveSystemName: .neutral20))
-        .clipShape(ContainerRelativeShape())
-        .containerShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        // Music Browser: square artwork with a one-point Carbon border.
+        .clipped()
+        .overlay { Rectangle().strokeBorder(Color(braveSystemName: .dividerSubtle), lineWidth: 1) }
       VStack(alignment: .leading, spacing: 4) {
         HStack(alignment: .top) {
           Text(title)
             .multilineTextAlignment(.leading)
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)
-            .font(.callout.weight(.semibold))
+            .fairFont(.bodyCompact02)
             .foregroundColor(Color(braveSystemName: .textPrimary))
             .frame(maxWidth: .infinity, alignment: .leading)
           if isSelected {
@@ -89,7 +90,7 @@ struct PlaylistItemView: View {
             }
           }
         }
-        .font(.footnote)
+        .fairFont(.code02)
         .foregroundStyle(Color(braveSystemName: .textSecondary))
       }
       .frame(maxWidth: .infinity, alignment: .leading)

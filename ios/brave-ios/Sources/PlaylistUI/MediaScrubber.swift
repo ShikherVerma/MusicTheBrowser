@@ -5,6 +5,7 @@
 
 import BraveUI
 import CoreMedia
+import DesignSystem
 import Foundation
 import Strings
 import SwiftUI
@@ -61,14 +62,14 @@ struct MediaScrubber<Label: View>: View {
   }
 
   private var barShape: some InsettableShape {
-    RoundedRectangle(cornerRadius: barHeight / 2, style: .continuous)
+    // Music Browser: square Carbon track.
+    Rectangle()
   }
 
   var body: some View {
     VStack {
       barShape
-        .opacity(0.3)
-        .foregroundStyle(.tint)
+        .foregroundStyle(Color(braveSystemName: .containerHighlight))
         .frame(height: barHeight)
         .overlay {
           if case .seconds(let duration) = duration {
@@ -219,7 +220,7 @@ struct DefaultMediaScrubberLabel: View {
       }
     }
     .foregroundStyle(.primary)
-    .font(.footnote)
+    .fairFont(.code02)
   }
 }
 

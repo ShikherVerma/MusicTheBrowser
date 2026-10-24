@@ -202,7 +202,7 @@ struct PlaylistSidebarListHeader: View {
             Text(totalSizeOnDisk, format: .byteCount(style: .file))
           }
         }
-        .font(.caption2)
+        .fairFont(.code02)
       }
       Spacer()
       Menu {
@@ -249,19 +249,18 @@ struct PlaylistSidebarListHeader: View {
 
 struct PlaylistSidebarContentUnavailableView: View {
   var body: some View {
-    VStack(spacing: 24) {
-      HStack(spacing: 12) {
-        Image("social-youtube", bundle: .module)
-        Image("social-facebook", bundle: .module)
-        Image("social-vimeo", bundle: .module)
-        Image("social-instagram", bundle: .module)
-      }
-      Text(Strings.Playlist.noMediaToPickFromEmptyState)
-        .multilineTextAlignment(.center)
-        .foregroundStyle(Color(braveSystemName: .textTertiary))
-        .frame(maxWidth: .infinity)
+    // Music Browser: no third-party site logos; the switcher is the action.
+    VStack(alignment: .leading, spacing: 16) {
+      Image(systemName: "music.note")
+        .font(.system(size: 40, weight: .light))
+        .foregroundStyle(Color(braveSystemName: .textSecondary))
+      Text("Your music lives here").fairFont(.heading03)
+      Text("Play music on any website and it's saved here automatically, ready to play offline.")
+        .fairFont(.body01)
+        .foregroundStyle(Color(braveSystemName: .textSecondary))
     }
-    .padding(40)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(16)
   }
 }
 

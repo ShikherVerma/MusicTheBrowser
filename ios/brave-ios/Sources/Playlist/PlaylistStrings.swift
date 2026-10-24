@@ -11,7 +11,7 @@ extension Strings {
     public static let defaultPlaylistTitle = NSLocalizedString(
       "playlist.defaultPlaylistTitle",
       bundle: .module,
-      value: "Play Later",
+      value: "All music",
       comment: "The title of the default playlist folder"
     )
   }
