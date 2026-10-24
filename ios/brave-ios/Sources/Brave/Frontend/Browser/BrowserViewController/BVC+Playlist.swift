@@ -13,6 +13,7 @@ import Playlist
 import PlaylistUI
 import Preferences
 import Shared
+import SwiftUI
 import UIKit
 import Web
 import os.log
@@ -277,6 +278,7 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
   func addToPlaylist(
     item: PlaylistInfo,
     folderUUID: String? = nil,
+    isUndoRemove: Bool = false,
     completion: ((_ didAddItem: Bool) -> Void)? = nil
   ) {
     PlaylistP3A.recordUsage()
@@ -288,7 +290,13 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
         completion: ((_ didAddItem: Bool) -> Void)?
       ) in
       PlaylistItem.addItem(item, folderUUID: folderUUID, cachedData: nil) {
-        guard let self = self else { return }
+        // Music Browser: a successful new creation consumes one lifetime save.
+        let created = PlaylistItem.itemExists(uuid: item.tagId)
+        if !isUndoRemove { FairSaveCount.shared.finish(id: item.tagId, created: created) }
+        guard let self, created else {
+          completion?(false)
+          return
+        }
 
         if let url = URL(string: item.src), url.scheme == "blob" {
           // Spawn a WebView to load the non-blob asset
@@ -319,7 +327,26 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
     }
 
     Task { @MainActor [self] in
-      // Music Browser: auto-save never prompts; everything played is saved.
+      // Music Browser: dedupe before the count gate, including menu/toolbar adds.
+      if PlaylistItem.itemExists(uuid: item.tagId)
+        || PlaylistItem.itemExists(pageSrc: item.pageSrc)
+        || PlaylistItem.itemExists(mediaSrc: item.src)
+      {
+        updatePlaylistURLBar(tab: tabManager.selectedTab, state: .existingItem, item: item)
+        completion?(false)
+        return
+      }
+      if !isUndoRemove {
+        let saves = FairSaveCount.shared
+        if saves.isPending(id: item.tagId) { completion?(false); return }
+        guard saves.reserve(id: item.tagId, unlocked: FairUnlock.shared.isUnlocked) else {
+          updatePlaylistURLBar(tab: tabManager.selectedTab, state: .newItem, item: item)
+          if FairUnlock.shared.shouldPresentAfterRefusedSave() { presentFairUnlock() }
+          completion?(false)
+          return
+        }
+      }
+      // Music Browser: never warn about storage before an automatic save.
       let shouldWarnAboutStorage = false
 
       if shouldWarnAboutStorage, self.view.window != nil {
@@ -350,6 +377,7 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
             title: Strings.cancelButtonTitle,
             style: .cancel,
             handler: { _ in
+              if !isUndoRemove { FairSaveCount.shared.finish(id: item.tagId, created: false) }
               completion?(false)
             }
           )
@@ -370,6 +398,16 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
 }
 
 extension BrowserViewController {
+  // Music Browser: explicit About/toolbar access is never rate-limited.
+  func presentFairUnlock() {
+    guard !FairUnlock.shared.isUnlocked else { return }
+    let controller = UIHostingController(rootView: FairUnlockView())
+    var presenter: UIViewController = self
+    while let presented = presenter.presentedViewController { presenter = presented }
+    guard !presenter.isBeingDismissed else { return }
+    presenter.present(controller, animated: true)
+  }
+
   func openPlaylistSettingsMenu() {
     let playlistSettings = PlaylistSettingsViewController()
     let navigationController = UINavigationController(rootViewController: playlistSettings)

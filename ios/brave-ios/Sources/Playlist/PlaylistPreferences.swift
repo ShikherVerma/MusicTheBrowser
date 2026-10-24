@@ -31,6 +31,11 @@ extension PrefService {
 
 extension Preferences {
   final public class Playlist {
+    // Music Browser: lifetime saves, not the current library size.
+    public static let savedSongCount = Option<Int>(key: "fair.savedSongCount", default: 0)
+    public static let unlimitedSongs = Option<Bool>(key: "fair.unlimitedSongs", default: false)
+    public static let lastUnlockRefusal = Option<Date?>(key: "fair.lastUnlockRefusal", default: nil)
+
     /// The count of how many times  Add to Playlist URL-Bar onboarding has been shown
     public static let addToPlaylistURLBarOnboardingCount = Option<Int>(
       key: "playlist.addToPlaylistURLBarOnboardingCount",

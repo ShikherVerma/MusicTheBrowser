@@ -19,6 +19,7 @@ import NetworkExtension
 import Onboarding
 import Origin
 import Playlist
+import PlaylistUI
 import Preferences
 import Shared
 import Static
@@ -169,6 +170,15 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
     navigationController?.view.backgroundColor = .systemGroupedBackground
 
     setUpSections()
+    // Music Browser: the About count and entitlement update while the sheet is open.
+    FairSaveCount.shared.$count.combineLatest(FairUnlock.shared.$isUnlocked)
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .sink { [weak self] _ in
+        self?.setUpSections()
+        self?.tableView.reloadData()
+      }
+      .store(in: &cancellables)
 
     if braveCore.profile.prefs.isBraveVPNAvailable {
       NotificationCenter.default.addObserver(
@@ -1600,7 +1610,13 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
     )
   }()
 
-  private lazy var aboutSection: Static.Section = {
+  // Music Browser: App Review can reach the purchase without filling the free tier.
+  private func showFairUnlock() {
+    guard !FairUnlock.shared.isUnlocked, presentedViewController == nil else { return }
+    present(UIHostingController(rootView: FairUnlockView()), animated: true)
+  }
+
+  private var aboutSection: Static.Section {
     let version = String(
       format: Strings.versionTemplate,
       Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
@@ -1621,6 +1637,23 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
     return Static.Section(
       header: .autoLayoutView(titleLabel),
       rows: [
+        // Music Browser: all features stay free; only new saved songs have a limit.
+        Row(
+          text: FairUnlock.shared.isUnlocked ? "Unlimited songs" : "Unlock unlimited songs",
+          detailText: FairUnlock.shared.isUnlocked ? "Unlocked"
+            : "\(FairSaveCount.shared.count.formatted()) of \(FairSaveCount.shared.limit.formatted()) free",
+          selection: { [weak self] in self?.showFairUnlock() },
+          accessory: FairUnlock.shared.isUnlocked ? .none : .disclosureIndicator,
+          cellClass: MultilineValue1Cell.self
+        ),
+        Row(
+          text: "Restore purchase",
+          selection: { [weak self] in
+            self?.showFairUnlock()
+            Task { await FairUnlock.shared.restore() }
+          },
+          cellClass: MultilineValue1Cell.self
+        ),
         Row(
           text: version,
           selection: { [unowned self, weak tabManager] in
@@ -1680,7 +1713,7 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
           text: Strings.privacyPolicy,
           selection: { [unowned self] in
             if let url = URL(
-              string: "https://github.com/ShikherVerma/MusicTheBrowser/blob/music-browser-v1/PRIVACY.md"
+              string: "https://shikherverma.com/fairapps/fairmusicbrowser/privacy"
             ) {
               settingsDelegate?.settingsOpenURLInNewTab(url)
             }
@@ -1697,9 +1730,27 @@ class SettingsViewController: TableViewController, BraveAccountAuthenticationObs
           },
           accessory: .disclosureIndicator
         ),
+        Row(
+          text: "More Fair Apps",
+          selection: { [weak self] in
+            if let url = URL(string: "https://shikherverma.com/fairapps/") {
+              self?.settingsDelegate?.settingsOpenURLInNewTab(url)
+            }
+          },
+          accessory: .disclosureIndicator
+        ),
+        Row(
+          text: "Fair Apps website",
+          selection: { [weak self] in
+            if let url = URL(string: "https://shikherverma.com/fairapps/") {
+              self?.settingsDelegate?.settingsOpenURLInNewTab(url)
+            }
+          },
+          accessory: .disclosureIndicator
+        ),
       ]
     )
-  }()
+  }
 
   private let debugSectionUUID = UUID().uuidString
   private lazy var debugSection: Static.Section = {

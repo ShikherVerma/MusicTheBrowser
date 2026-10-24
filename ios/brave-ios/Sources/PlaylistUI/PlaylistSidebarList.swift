@@ -72,6 +72,11 @@ struct PlaylistSidebarListHeader: View {
   @Binding var isNewPlaylistAlertPresented: Bool
   @Binding var isEditModePresented: Bool
 
+  // Music Browser: show the lifetime count only near the free limit.
+  @ObservedObject private var saves = FairSaveCount.shared
+  @ObservedObject private var unlock = FairUnlock.shared
+  @State private var isUnlockPresented = false
+
   @State private var totalSizeOnDisk = Measurement<UnitInformationStorage>(value: 0, unit: .bytes)
   @State private var isDeletePlaylistConfirmationActive: Bool = false
   @State private var isRenamePlaylistAlertPresented: Bool = false
@@ -203,6 +208,17 @@ struct PlaylistSidebarListHeader: View {
           }
         }
         .fairFont(.code02)
+        if !unlock.isUnlocked && saves.count >= Int(ceil(Double(saves.limit) * 0.9)) {
+          Text("\(saves.count.formatted()) of \(saves.limit.formatted()) free songs saved")
+            .fairFont(.code02)
+          Button("Unlock") { isUnlockPresented = true }
+            .frame(minHeight: 48)
+            .tint(Color(braveSystemName: .textInteractive))
+        }
+        if unlock.didUnlock {
+          Text("Unlocked. Every song you play is saved again.")
+            .fairFont(.body01)
+        }
       }
       Spacer()
       Menu {
@@ -231,6 +247,8 @@ struct PlaylistSidebarListHeader: View {
       )
     }
     .padding()
+    .sheet(isPresented: $isUnlockPresented) { FairUnlockView() }
+    .onDisappear { unlock.clearUnlockNotice() }
     .task {
       await calculateTotalSizeOnDisk(for: selectedFolder)
     }

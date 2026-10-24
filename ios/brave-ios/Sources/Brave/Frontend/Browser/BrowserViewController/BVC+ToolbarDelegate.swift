@@ -163,6 +163,11 @@ extension BrowserViewController: TopToolbarDelegate, SearchContainerViewControll
     let state = urlBar.locationView.playlistButton.buttonState
     switch state {
     case .addToPlaylist:
+      // Music Browser: an explicit tap can always reach the unlock sheet.
+      if !FairUnlock.shared.isUnlocked && FairSaveCount.shared.count >= FairSaveCount.shared.limit {
+        presentFairUnlock()
+        return
+      }
       addToPlaylist(item: playlistItem) { [weak self] didAddItem in
         guard let self else { return }
 
@@ -204,7 +209,7 @@ extension BrowserViewController: TopToolbarDelegate, SearchContainerViewControll
         }
       }
     case .undoRemove(let originalFolderUUID):
-      addToPlaylist(item: info, folderUUID: originalFolderUUID)
+      addToPlaylist(item: info, folderUUID: originalFolderUUID, isUndoRemove: true)
     }
   }
 

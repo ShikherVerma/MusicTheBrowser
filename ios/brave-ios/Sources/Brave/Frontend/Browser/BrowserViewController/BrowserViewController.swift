@@ -968,6 +968,9 @@ public class BrowserViewController: UIViewController {
 
   override public func viewDidLoad() {
     super.viewDidLoad()
+    // Music Browser: reconcile lifetime saves and the cached store entitlement at launch.
+    _ = FairSaveCount.shared
+    _ = FairUnlock.shared
     view.backgroundColor = UIColor(braveSystemName: .containerBackground)
 
     // Add layout guides
