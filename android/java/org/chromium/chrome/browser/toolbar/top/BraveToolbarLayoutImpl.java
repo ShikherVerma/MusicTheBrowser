@@ -852,9 +852,10 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                 for (PlaylistItem item : items) {
                     String media = item.mediaSource.url;
                     String page = item.pageSource.url;
-                    String source = page + "\n" + media;
+                    String source = media.isEmpty() ? "page:" + page : "media:" + media;
                     if (pageSources.contains(page) || (!media.isEmpty() && mediaSources.contains(media))
-                            || mMusicBrowserAddedSources.contains(source)) continue;
+                            || mMusicBrowserAddedSources.contains(source)
+                            || saves.isPending(source)) continue;
                     if (!saves.reserve(source, unlock.isUnlocked())) {
                         refused = true;
                         continue;

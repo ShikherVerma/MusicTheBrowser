@@ -282,6 +282,8 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
     completion: ((_ didAddItem: Bool) -> Void)? = nil
   ) {
     PlaylistP3A.recordUsage()
+    // Music Browser: page rewrites can produce a new tag while a media save is in flight.
+    let reservationID = item.src.isEmpty ? "page:" + item.pageSrc : "media:" + item.src
 
     let addItemToPlaylist = {
       [weak self] (
@@ -292,7 +294,7 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
       PlaylistItem.addItem(item, folderUUID: folderUUID, cachedData: nil) {
         // Music Browser: a successful new creation consumes one lifetime save.
         let created = PlaylistItem.itemExists(uuid: item.tagId)
-        if !isUndoRemove { FairSaveCount.shared.finish(id: item.tagId, created: created) }
+        if !isUndoRemove { FairSaveCount.shared.finish(id: reservationID, created: created) }
         guard let self, created else {
           completion?(false)
           return
@@ -338,10 +340,13 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
       }
       if !isUndoRemove {
         let saves = FairSaveCount.shared
-        if saves.isPending(id: item.tagId) { completion?(false); return }
-        guard saves.reserve(id: item.tagId, unlocked: FairUnlock.shared.isUnlocked) else {
+        if saves.isPending(id: reservationID) { completion?(false); return }
+        guard saves.reserve(id: reservationID, unlocked: FairUnlock.shared.isUnlocked) else {
           updatePlaylistURLBar(tab: tabManager.selectedTab, state: .newItem, item: item)
-          if FairUnlock.shared.shouldPresentAfterRefusedSave() { presentFairUnlock() }
+          if view.window != nil, UIApplication.shared.applicationState == .active,
+            presentedViewController?.isBeingDismissed != true,
+            FairUnlock.shared.shouldPresentAfterRefusedSave()
+          { presentFairUnlock() }
           completion?(false)
           return
         }
@@ -377,7 +382,7 @@ extension BrowserViewController: PlaylistTabHelperDelegate {
             title: Strings.cancelButtonTitle,
             style: .cancel,
             handler: { _ in
-              if !isUndoRemove { FairSaveCount.shared.finish(id: item.tagId, created: false) }
+              if !isUndoRemove { FairSaveCount.shared.finish(id: reservationID, created: false) }
               completion?(false)
             }
           )

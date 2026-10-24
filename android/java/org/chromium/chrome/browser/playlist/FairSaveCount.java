@@ -120,6 +120,8 @@ public final class FairSaveCount {
         else mWaiting.add(callback);
     }
 
+    public boolean isPending(String source) { return mPending.contains(source); }
+
     public boolean reserve(String source, boolean unlocked) {
         if (!mReady || mPending.contains(source)
                 || (!unlocked && count() + mPending.size() >= limit())) return false;
