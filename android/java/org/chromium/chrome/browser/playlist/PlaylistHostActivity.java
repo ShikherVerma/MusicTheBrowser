@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.ViewCompat;
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
@@ -63,6 +64,7 @@ import org.chromium.chrome.browser.BraveLandscapeHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.playlist.PlaylistServiceObserverImpl.PlaylistServiceObserverImplDelegate;
 import org.chromium.chrome.browser.playlist.hls_content.HlsService;
 import org.chromium.chrome.browser.playlist.hls_content.HlsServiceImpl;
@@ -132,6 +134,21 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
         mPlaylistService.addObserver(mPlaylistServiceObserver);
     }
 
+    // Music Browser: scope always-dark appearance to Music, not the Browse activity.
+    @Override
+    protected NightModeStateProvider createNightModeStateProvider() {
+        return new NightModeStateProvider() {
+            @Override public boolean isInNightMode() { return true; }
+            @Override public void addObserver(NightModeStateProvider.Observer observer) {}
+            @Override public void removeObserver(NightModeStateProvider.Observer observer) {}
+        };
+    }
+
+    @Override
+    protected void initializeNightModeStateProvider() {
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
+
     @Override
     protected void triggerLayoutInflation() {
         setContentView(R.layout.activity_playlist_host);
@@ -142,11 +159,14 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
         int padding = Math.round(8 * getResources().getDisplayMetrics().density);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fair_music_mode_strip),
                 (view, insets) -> {
-                    int bottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+                    WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(view);
+                    int bottom = (rootInsets != null ? rootInsets : insets)
+                            .getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
                     view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(),
                             padding + bottom);
                     return insets;
                 });
+        ViewCompat.requestApplyInsets(findViewById(R.id.fair_music_mode_strip));
         onInitialLayoutInflationComplete();
     }
 

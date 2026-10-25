@@ -268,37 +268,40 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        // Music Browser: a flat, square Carbon address field; retain native text gestures.
-        View field = findViewById(R.id.location_bar);
-        if (field != null) {
-            field.setElevation(0);
-            field.setForeground(new Drawable() {
-                private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                @Override public void draw(Canvas canvas) {
-                    boolean focused = isUrlBarFocused();
-                    float density = getResources().getDisplayMetrics().density;
-                    mPaint.setColor(getContext().getColor(
-                            focused ? R.color.text_interactive : R.color.divider_strong));
-                    mPaint.setStrokeWidth((focused ? 2 : 1) * density);
-                    mPaint.setStyle(Paint.Style.STROKE);
-                    if (focused) {
-                        float inset = density;
-                        canvas.drawRect(getBounds().left + inset, getBounds().top + inset,
-                                getBounds().right - inset, getBounds().bottom - inset, mPaint);
-                    } else {
-                        float y = getBounds().bottom - density / 2;
-                        canvas.drawLine(getBounds().left, y, getBounds().right, y, mPaint);
+        // Music Browser: the address field is an ancestor/sibling, not a child of these buttons.
+        // Wait for attachment so the full toolbar hierarchy is available.
+        post(() -> {
+            View field = getRootView().findViewById(R.id.location_bar);
+            if (field != null) {
+                field.setElevation(0);
+                field.setForeground(new Drawable() {
+                    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    @Override public void draw(Canvas canvas) {
+                        boolean focused = isUrlBarFocused();
+                        float density = getResources().getDisplayMetrics().density;
+                        mPaint.setColor(getContext().getColor(
+                                focused ? R.color.text_interactive : R.color.divider_strong));
+                        mPaint.setStrokeWidth((focused ? 2 : 1) * density);
+                        mPaint.setStyle(Paint.Style.STROKE);
+                        if (focused) {
+                            float inset = density;
+                            canvas.drawRect(getBounds().left + inset, getBounds().top + inset,
+                                    getBounds().right - inset, getBounds().bottom - inset, mPaint);
+                        } else {
+                            float y = getBounds().bottom - density / 2;
+                            canvas.drawLine(getBounds().left, y, getBounds().right, y, mPaint);
+                        }
                     }
-                }
-                @Override public void setAlpha(int alpha) { mPaint.setAlpha(alpha); invalidateSelf(); }
-                @Override public void setColorFilter(@Nullable ColorFilter filter) {
-                    mPaint.setColorFilter(filter); invalidateSelf();
-                }
-                @Override public int getOpacity() { return PixelFormat.TRANSLUCENT; }
-            });
-            field.getViewTreeObserver().addOnGlobalFocusChangeListener(
-                    (oldFocus, newFocus) -> field.invalidate());
-        }
+                    @Override public void setAlpha(int alpha) { mPaint.setAlpha(alpha); invalidateSelf(); }
+                    @Override public void setColorFilter(@Nullable ColorFilter filter) {
+                        mPaint.setColorFilter(filter); invalidateSelf();
+                    }
+                    @Override public int getOpacity() { return PixelFormat.TRANSLUCENT; }
+                });
+                field.getViewTreeObserver().addOnGlobalFocusChangeListener(
+                        (oldFocus, newFocus) -> field.invalidate());
+            }
+        });
 
         mWalletLayout = findViewById(R.id.brave_wallet_button_layout);
         mShieldsLayout = findViewById(R.id.brave_shields_button_layout);

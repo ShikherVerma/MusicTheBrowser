@@ -11,8 +11,8 @@ import org.chromium.chrome.browser.settings.BackgroundImagesPreferences;
 
 public class NtpUtil {
     public static boolean shouldDisplayTopSites() {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(BackgroundImagesPreferences.PREF_SHOW_TOP_SITES, true);
+        // Music Browser: Home is the listening intro and recent saves, not a site-tile dashboard.
+        return false;
     }
 
     public static void setDisplayTopSites(boolean shouldDisplayTopSites) {

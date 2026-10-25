@@ -185,7 +185,9 @@ public class BraveNewTabPageLayout extends NewTabPageLayout
         mMvTilesContainerLayout =
                 (ViewGroup) ((ViewStub) findViewById(R.id.mv_tiles_layout_stub)).inflate();
         mMvTilesContainerLayout.setPadding(0, 0, 0, 0);
-        mMvTilesContainerLayout.setVisibility(View.VISIBLE);
+        // Music Browser: the inflated tile stub must also stay hidden outside the adapter.
+        mMvTilesContainerLayout.setVisibility(
+                NtpUtil.shouldDisplayTopSites() ? View.VISIBLE : View.GONE);
 
         mMvTilesContainerLayout.post(
                 new Runnable() {

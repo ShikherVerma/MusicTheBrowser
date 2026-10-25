@@ -3,6 +3,8 @@
 <resources>
     <dimen name="brave_bottom_toolbar_height">64dp</dimen>
     <dimen name="toolbar_corner_radius">0dp</dimen>
+    <dimen name="modern_toolbar_background_corner_radius">0dp</dimen>
+    <dimen name="home_surface_search_box_background_radius">0dp</dimen>
     <dimen name="button_compat_corner_radius">0dp</dimen>
     <dimen name="popup_bg_corner_radius_16dp">0dp</dimen>
     <dimen name="popup_bg_corner_radius_24dp">0dp</dimen>
