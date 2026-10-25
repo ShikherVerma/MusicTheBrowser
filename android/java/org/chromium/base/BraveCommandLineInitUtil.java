@@ -44,6 +44,9 @@ public abstract class BraveCommandLineInitUtil {
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     static void appendBraveSwitchesAndArguments() {
         SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
+        // Music Browser: no Brave Shields onboarding bubble in this single-purpose app.
+        // Same key as BraveShieldsUtils, without a //base -> //chrome dependency.
+        sharedPreferences.edit().putBoolean("shields_tooltip", true).apply();
         String qaCommandLine = sharedPreferences.getString(PREF_QA_COMMAND_LINE, "");
         if (sharedPreferences.getBoolean(PREF_QA_VLOG_REWARDS, false)) {
             qaCommandLine += " --enable-logging=stderr";

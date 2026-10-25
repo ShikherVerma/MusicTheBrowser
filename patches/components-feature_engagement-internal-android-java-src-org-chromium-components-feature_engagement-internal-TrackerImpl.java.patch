@@ -1,0 +1,53 @@
+diff --git a/components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java b/components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java
+index a188846..79e8c45 100644
+--- a/components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java
++++ b/components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java
+@@ -12,13 +12,11 @@ import org.jni_zero.JniType;
+ import org.jni_zero.NativeMethods;
+ 
+ import org.chromium.base.Callback;
+-import org.chromium.base.CommandLine;
+ import org.chromium.build.annotations.NullMarked;
+ import org.chromium.build.annotations.Nullable;
+ import org.chromium.components.feature_engagement.Tracker;
+ import org.chromium.components.feature_engagement.TriggerDetails;
+ import org.chromium.components.feature_engagement.TriggerState;
+-import org.chromium.ui.UiSwitches;
+ 
+ /**
+  * Java side of the JNI bridge between TrackerImpl in Java
+@@ -76,29 +74,19 @@ public class TrackerImpl implements Tracker {
+ 
+     @Override
+     public boolean shouldTriggerHelpUi(String feature) {
+-        // Disable all IPH if the UI is in screenshot mode. For context, see crbug.com/964012.
+-        if (CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_SCREENSHOT_UI_MODE)) {
+-            return false;
+-        }
+-
+-        assert mNativePtr != 0;
+-        return TrackerImplJni.get().shouldTriggerHelpUi(mNativePtr, feature);
++        // Music Browser has no browser-feature onboarding surfaces.
++        return false;
+     }
+ 
+     @Override
+     public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
+-        // Disable all IPH if the UI is in screenshot mode. For context, see crbug.com/964012.
+-        if (CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_SCREENSHOT_UI_MODE)) {
+-            return new TriggerDetails(false, false);
+-        }
+-        assert mNativePtr != 0;
+-        return TrackerImplJni.get().shouldTriggerHelpUiWithSnooze(mNativePtr, feature);
++        // Music Browser has no browser-feature onboarding surfaces.
++        return new TriggerDetails(false, false);
+     }
+ 
+     @Override
+     public boolean wouldTriggerHelpUi(String feature) {
+-        assert mNativePtr != 0;
+-        return TrackerImplJni.get().wouldTriggerHelpUi(mNativePtr, feature);
++        return false;
+     }
+ 
+     @Override
