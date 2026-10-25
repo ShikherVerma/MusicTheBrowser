@@ -32,4 +32,4 @@ GCC_PREPROCESSOR_DEFINITIONS= DEBUG=1
 // Music Browser version (overrides the Brave version from args.xcconfig).
 // Bump brave_version_build for every App Store upload.
 brave_ios_marketing_version = 1.0
-brave_version_build = 1
+brave_version_build = 2

@@ -55,7 +55,6 @@ public class MediaThumbnailLoader: ObservableObject {
 
 struct MediaThumbnail: View {
   @StateObject private var thumbnailLoader: MediaThumbnailLoader = .init()
-  @State private var displayFavicon: Bool = false
 
   var assetURL: URL
   var pageURL: URL
@@ -71,21 +70,9 @@ struct MediaThumbnail: View {
             .transition(.opacity)
         }
       }
-      .overlay {
-        if displayFavicon {
-          StyledFaviconImage(url: pageURL.absoluteString, isPrivateBrowsing: false)
-        }
-      }
       .task(id: pageURL) {
-        do {
-          try await thumbnailLoader.loadThumbnail(
-            assetURL: assetURL,
-            pageURL: pageURL
-          )
-          displayFavicon = false
-        } catch {
-          displayFavicon = true
-        }
+        // Music Browser: failed artwork keeps the flat note, not the site's favicon/identicon.
+        try? await thumbnailLoader.loadThumbnail(assetURL: assetURL, pageURL: pageURL)
       }
   }
 }
