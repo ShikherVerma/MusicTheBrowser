@@ -22,6 +22,7 @@ struct PlaylistItemView: View {
   var isPlaying: Bool
   var cacheState: ItemCacheState?
   var savedBytes: Int? = nil
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   var body: some View {
     HStack(spacing: 12) {
@@ -51,7 +52,11 @@ struct PlaylistItemView: View {
               .tint(Color(braveSystemName: .primary50))
           }
         }
-        HStack(alignment: .firstTextBaseline) {
+        // Music Browser: metadata grows vertically at accessibility sizes, not under the artwork.
+        let metadataLayout = dynamicTypeSize.isAccessibilitySize
+          ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+          : AnyLayout(HStackLayout(alignment: .firstTextBaseline))
+        metadataLayout {
           switch duration {
           case .seconds(let duration):
             if duration > 0 {
@@ -65,7 +70,7 @@ struct PlaylistItemView: View {
             EmptyView()
           }
           if let savedBytes {
-            Text("·")
+            if !dynamicTypeSize.isAccessibilitySize { Text("·") }
             Text(ByteCountFormatter.string(fromByteCount: Int64(savedBytes), countStyle: .file))
           }
           if let cacheState {

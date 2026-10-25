@@ -76,6 +76,8 @@ struct PlaylistSidebarListHeader: View {
   @ObservedObject private var unlock = FairUnlock.shared
   @State private var isUnlockPresented = false
 
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
   @State private var totalSizeOnDisk = Measurement<UnitInformationStorage>(value: 0, unit: .bytes)
   @State private var isDeletePlaylistConfirmationActive: Bool = false
   @State private var isRenamePlaylistAlertPresented: Bool = false
@@ -133,7 +135,11 @@ struct PlaylistSidebarListHeader: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
-      HStack(alignment: .top, spacing: 16) {
+      // Music Browser: accessibility text stacks the title/actions instead of squeezing them.
+      let headerLayout = dynamicTypeSize.isAccessibilitySize
+        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
+        : AnyLayout(HStackLayout(alignment: .top, spacing: 16))
+      headerLayout {
         VStack(alignment: .leading) {
           Menu {
             Picker("", selection: $selectedFolder) {
@@ -155,7 +161,10 @@ struct PlaylistSidebarListHeader: View {
               .foregroundStyle(Color(braveSystemName: .textPrimary))
               .contentShape(.rect)
           }
-          HStack {
+          let metadataLayout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(spacing: 8))
+          metadataLayout {
             let items = selectedFolderItems
             let totalDuration = Duration.seconds(
               items.reduce(
@@ -196,7 +205,7 @@ struct PlaylistSidebarListHeader: View {
               .fairFont(.body01)
           }
         }
-        Spacer()
+        .frame(maxWidth: .infinity, alignment: .leading)
         Menu {
           if selectedFolder.uuid != PlaylistFolder.savedFolderUUID {
             Button {
