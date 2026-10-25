@@ -14,3 +14,6 @@ enable_mdns = true
 
 # We want it to be enabled for all configurations
 disable_android_lint = false
+
+# Music Browser: no on-device AI backend or its ML Kit SDKs.
+use_mlkit_for_aicore = false
