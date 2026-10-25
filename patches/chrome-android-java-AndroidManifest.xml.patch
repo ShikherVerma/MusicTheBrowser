@@ -1,5 +1,5 @@
 diff --git a/chrome/android/java/AndroidManifest.xml b/chrome/android/java/AndroidManifest.xml
-index bb740340ea1694bf6fcb6beb6712d6bfca45d2fe..3f1bb14a574fdbe280e2a4eab59375e8ba4377e0 100644
+index bb740340ea1694bf6fcb6beb6712d6bfca45d2fe..9af8949fe91eb573fba996e31705ed5a2250888e 100644
 --- a/chrome/android/java/AndroidManifest.xml
 +++ b/chrome/android/java/AndroidManifest.xml
 @@ -33,13 +33,19 @@ by a child template that "extends" this file.
@@ -63,7 +63,7 @@ index bb740340ea1694bf6fcb6beb6712d6bfca45d2fe..3f1bb14a574fdbe280e2a4eab59375e8
      <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 +-->
      <uses-permission android:name="android.permission.INTERNET"/>
-+    <uses-permission android:name="com.android.vending.BILLING" tools:node="remove"/>
++    <uses-permission android:name="com.android.vending.BILLING"/>
 +    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:node="remove"/>
 +    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" tools:node="remove"/>
 +<!--
