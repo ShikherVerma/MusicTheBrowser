@@ -731,6 +731,7 @@ if (current_toolchain == default_toolchain) {
       "java/res_fair/layout/fragment_playlist_player.xml",
       "java/res_fair/layout/player_bottom_view.xml",
       "java/res_fair/drawable/chrome_product_vd_24.xml",
+      "java/res_fair/values/fair_media.xml",
       "java/res_fair/drawable/fair_music_note.xml",
       "java/res_fair/drawable/fair_player_note.xml",
       "java/res_fair/values-night/fair_colors.xml",
