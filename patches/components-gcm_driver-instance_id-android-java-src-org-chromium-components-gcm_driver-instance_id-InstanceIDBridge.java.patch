@@ -1,5 +1,5 @@
 diff --git a/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java b/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java
-index 370ae28..c3a2d5a 100644
+index 370ae28..eca218d 100644
 --- a/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java
 +++ b/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java
 @@ -9,9 +9,11 @@ import org.jni_zero.JNINamespace;
@@ -15,7 +15,13 @@ index 370ae28..c3a2d5a 100644
  import org.chromium.components.gcm_driver.LazySubscriptionsManager;
  import org.chromium.components.gcm_driver.SubscriptionFlagManager;
  
-@@ -116,31 +118,16 @@ public class InstanceIDBridge {
+@@ -111,36 +113,22 @@ public class InstanceIDBridge {
+      * as lazy such that incoming messages are deferred until there are visible activities.
+      */
+     @CalledByNative
++    @SuppressWarnings("UnusedVariable") // Retain the existing call/JNI contract.
+     private void getToken(
+             final int requestId,
              final @JniType("std::string") String authorizedEntity,
              final @JniType("std::string") String scope,
              int flags) {
