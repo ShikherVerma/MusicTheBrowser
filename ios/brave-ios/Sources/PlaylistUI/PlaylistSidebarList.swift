@@ -103,11 +103,7 @@ struct PlaylistSidebarListHeader: View {
   }
 
   @MainActor private func calculateTotalSizeOnDisk(for folder: PlaylistFolder) async {
-    // Cache-first hides the total size in the header, so skip the (potentially expensive) disk scan.
-    if FeatureList.kPlaylistCacheFirstEnabled.enabled {
-      totalSizeOnDisk = .init(value: 0, unit: .bytes)
-      return
-    }
+    // Music Browser: cached bytes are part of the library summary in either cache mode.
     // Since we're consuming CoreData we need to make sure those accesses happen on main
     let items = selectedFolderItems
     var totalSize: Int = 0
@@ -179,17 +175,14 @@ struct PlaylistSidebarListHeader: View {
               )
             )
             let totalSize = totalSizeOnDisk
-            Text(
-              items.count == 1
-                ? Strings.Playlist.itemCountSingular
-                : String.localizedStringWithFormat(Strings.Playlist.itemCountPlural, items.count)
-            )
-            if !items.isEmpty {
-              Text(totalDuration, format: .units(width: .narrow, maximumUnitCount: 2))
-            }
-            // Cache-first manages the cache automatically, so the on-disk size isn't surfaced.
-            if !totalSize.value.isZero, !FeatureList.kPlaylistCacheFirstEnabled.enabled {
+            Text(items.count == 1 ? "1 song" : "\(items.count.formatted()) songs")
+            if !totalSize.value.isZero {
+              if !dynamicTypeSize.isAccessibilitySize { Text("·") }
               Text(totalSizeOnDisk, format: .byteCount(style: .file))
+            }
+            if !items.isEmpty {
+              if !dynamicTypeSize.isAccessibilitySize { Text("·") }
+              Text(totalDuration, format: .units(width: .narrow, maximumUnitCount: 2))
             }
           }
           .fairFont(.code02)

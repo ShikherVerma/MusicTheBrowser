@@ -26,12 +26,14 @@ public struct ModeSwitcher: View {
         Button {
           if mode != selection { onSelect(mode) }
         } label: {
-          ZStack(alignment: .center) {
+          HStack(spacing: 0) {
+            Spacer(minLength: 0)
             Text(mode.rawValue)
               .fairFont(.bodyCompact02)
               .multilineTextAlignment(.center)
               .padding(.horizontal, 16)
               .padding(.vertical, 8)
+            Spacer(minLength: 0)
           }
             .frame(minWidth: 96, maxWidth: .infinity, minHeight: 48, alignment: .center)
             .foregroundStyle(Color(braveSystemName: mode == selection ? .schemesInverseOnSurface : .textSecondary))

@@ -203,7 +203,8 @@ extension Preferences {
     /// Whether or not to show recent searches opt-in
     static let shouldShowRecentSearchesOptIn = Option<Bool>(
       key: "search.should-show-recent-searches.opt-in",
-      default: true
+      // Music Browser: typing the first song must not open another opt-in prompt.
+      default: false
     )
     /// Whether or not to show suggestions from browser `Open Tabs & Bookmarks & History` while the user types
     static let showBrowserSuggestions = Option<Bool>(
