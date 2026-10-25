@@ -18,6 +18,7 @@ import Favicon
 import Growth
 import NetworkExtension
 import Onboarding
+import Playlist
 import Preferences
 import ScreenTime
 import Shared
