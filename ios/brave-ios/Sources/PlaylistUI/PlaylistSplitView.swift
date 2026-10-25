@@ -261,8 +261,8 @@ struct PlaylistSplitView<Sidebar: View, SidebarHeader: View, Content: View, Tool
         .padding(.horizontal)
         .tint(Color.primary)
         // Mimic an actual navigation bar re: sizing/layout
-        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
-        .frame(height: 44)
+        // Music Browser: the owned toolbar grows with accessibility text.
+        .frame(minHeight: 44)
         .contentShape(.rect)
         .zIndex(2)
         // --
@@ -324,9 +324,6 @@ struct PlaylistSplitView<Sidebar: View, SidebarHeader: View, Content: View, Tool
     .onChange(of: maxDetentHeight) { _, _ in
       computeDetentHeights()
     }
-    // FIXME: Figure out what to do in AX sizes
-    // XXXL may even have issues with DisplayZoom on
-    .dynamicTypeSize(.xSmall...DynamicTypeSize.xxxLarge)
   }
 }
 

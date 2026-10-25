@@ -4,6 +4,7 @@
 
 import BraveShared
 import BraveUI
+import DesignSystem
 import Shared
 import UIKit
 
@@ -41,23 +42,13 @@ class FavoritesCell: UICollectionViewCell, CollectionViewReusable {
     $0.textAlignment = UI.labelAlignment
     $0.lineBreakMode = NSLineBreakMode.byWordWrapping
     $0.numberOfLines = 2
-    $0.textColor = .white
+    // Music Browser: user-created favourites sit on the adaptive Carbon Home surface.
+    $0.textColor = UIColor(braveSystemName: .textPrimary)
   }
 
   var title: String? {
     didSet {
-      textLabel.attributedText = title.map {
-        let shadow = NSShadow()
-        shadow.shadowColor = UIColor(white: 0, alpha: 0.35)
-        shadow.shadowOffset = CGSize(width: 0, height: 1)
-        shadow.shadowBlurRadius = 4
-        return NSAttributedString(
-          string: $0,
-          attributes: [
-            .shadow: shadow
-          ]
-        )
-      }
+      textLabel.text = title
     }
   }
 
@@ -104,7 +95,7 @@ class FavoritesCell: UICollectionViewCell, CollectionViewReusable {
     super.init(frame: frame)
 
     isAccessibilityElement = true
-    overrideUserInterfaceStyle = .dark
+    overrideUserInterfaceStyle = .unspecified
 
     imageContainerView.contentView.addSubview(imageView)
 
