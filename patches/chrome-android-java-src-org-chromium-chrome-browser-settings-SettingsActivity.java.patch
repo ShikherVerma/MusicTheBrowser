@@ -1,5 +1,5 @@
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java b/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java
-index a82ab1e..95bc203 100644
+index a82ab1e..e37663c 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java
 @@ -39,7 +39,6 @@ import androidx.preference.PreferenceFragmentCompat;
@@ -18,7 +18,7 @@ index a82ab1e..95bc203 100644
  import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
  import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
  import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
-@@ -467,35 +465,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
+@@ -467,37 +465,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
          mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
      }
  
@@ -55,8 +55,11 @@ index a82ab1e..95bc203 100644
 +        // Music Browser: About has no hidden upstream settings search surface.
      }
  
++    @SuppressWarnings("UnusedMethod") // Upstream helper retained while settings search is disabled.
      private void updateFirstVisibleTitle(int index) {
-@@ -508,7 +480,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
+         assumeNonNull(mMultiColumnTitleUpdater).setFirstVisibleTitleIndex(index);
+     }
+@@ -508,7 +481,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
  
      /** Returns true if the AndroidSettingsContainment feature is enabled. */
      private static boolean isMultiColumnSettingEnabled() {
