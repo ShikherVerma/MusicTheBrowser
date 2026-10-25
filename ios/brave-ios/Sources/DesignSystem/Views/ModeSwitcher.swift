@@ -31,6 +31,9 @@ public struct ModeSwitcher: View {
             Text(mode.rawValue)
               .fairFont(.bodyCompact02)
               .multilineTextAlignment(.center)
+              // Music Browser: keep each mode name whole in the fixed navigation strip at AX sizes.
+              .lineLimit(1)
+              .minimumScaleFactor(0.5)
               .padding(.horizontal, 16)
               .padding(.vertical, 8)
             Spacer(minLength: 0)
