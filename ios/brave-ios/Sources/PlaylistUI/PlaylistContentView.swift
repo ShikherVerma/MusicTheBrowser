@@ -85,7 +85,7 @@ struct PlaylistContentView: View {
   public var body: some View {
     // Music Browser: keep the drawer inside the content bounds, above the mode strip.
     VStack(spacing: 0) {
-      PlaylistSplitView(selectedDetent: $selectedDetent) {
+      PlaylistSplitView(selectedDetent: $selectedDetent, hidesSidebar: PlaylistItem.count() == 0) {
         PlaylistSidebarList(
           folders: Array(folders),
           folderID: selectedFolderID,
@@ -165,6 +165,7 @@ struct PlaylistContentView: View {
       .padding(.vertical, 8)
       .background(Color(braveSystemName: .pageBackground), ignoresSafeAreaEdges: .bottom)
     }
+    .background(Color(braveSystemName: .pageBackground), ignoresSafeAreaEdges: .all)
     .preferredColorScheme(.dark)
     .task {
       await playerModel.prepareItemQueue()

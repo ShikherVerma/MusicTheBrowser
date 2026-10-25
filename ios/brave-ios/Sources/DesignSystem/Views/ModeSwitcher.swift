@@ -37,6 +37,7 @@ public struct ModeSwitcher: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
         .accessibilityLabel("Mode, \(mode.rawValue)")
         .accessibilityValue(mode == .browse ? "1 of 2" : "2 of 2")
         .accessibilityAddTraits(mode == selection ? .isSelected : [])

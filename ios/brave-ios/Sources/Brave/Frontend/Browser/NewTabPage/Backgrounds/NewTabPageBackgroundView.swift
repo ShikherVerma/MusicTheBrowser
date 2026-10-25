@@ -23,14 +23,8 @@ class NewTabPageBackgroundView: UIView {
     super.init(frame: frame)
 
     clipsToBounds = true
-    backgroundColor = .init {
-      if $0.userInterfaceStyle == .dark {
-        return UIColor(braveSystemName: .pageBackground)
-      }
-      // We use a special color here unfortunately when there is no background because
-      // favorite cells have white text
-      return .init(rgb: 0x3b3e4f)
-    }
+    // Music Browser: Home's Carbon text must sit on the matching adaptive page surface.
+    backgroundColor = UIColor(braveSystemName: .pageBackground)
 
     addSubview(imageView)
     imageView.snp.makeConstraints {

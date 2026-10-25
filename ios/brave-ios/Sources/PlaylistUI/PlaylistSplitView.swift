@@ -21,6 +21,7 @@ struct PlaylistSplitView<Sidebar: View, SidebarHeader: View, Content: View, Tool
   @Environment(\.isFullScreen) private var isFullScreen
 
   @Binding var selectedDetent: PlaylistSheetDetent
+  var hidesSidebar: Bool
   var sidebar: Sidebar
   var sidebarHeader: SidebarHeader
   var content: Content
@@ -28,12 +29,14 @@ struct PlaylistSplitView<Sidebar: View, SidebarHeader: View, Content: View, Tool
 
   init(
     selectedDetent: Binding<PlaylistSheetDetent>,
+    hidesSidebar: Bool = false,
     @ViewBuilder sidebar: () -> Sidebar,
     @ViewBuilder sidebarHeader: () -> SidebarHeader,
     @ViewBuilder content: () -> Content,
     @ViewBuilder toolbar: () -> Toolbar
   ) {
     self._selectedDetent = selectedDetent
+    self.hidesSidebar = hidesSidebar
     self.sidebar = sidebar()
     self.sidebarHeader = sidebarHeader()
     self.content = content()
@@ -51,7 +54,8 @@ struct PlaylistSplitView<Sidebar: View, SidebarHeader: View, Content: View, Tool
 
   private var sidebarLayoutMode: SidebarLayoutMode {
     // By default being in full screen mode means hiding the sidebar entirely
-    if isFullScreen {
+    // Music Browser: one empty state, not a second copy in a redundant empty drawer.
+    if isFullScreen || hidesSidebar {
       return .none
     }
     // Whether or not the sidebar is visible
