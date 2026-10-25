@@ -232,7 +232,9 @@ import org.chromium.chrome.browser.vpn.utils.BraveVpnUtils;
 import org.chromium.chrome.browser.vpn.wireguard.WireguardConfigUtils;
 import org.chromium.chrome.browser.widget.quickactionsearchandbookmark.promo.SearchWidgetPromoPanel;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -1277,6 +1279,10 @@ public abstract class BraveActivity extends ChromeActivity
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
+
+        // Music Browser: music playback needs media controls, not website push registration.
+        WebsitePreferenceBridge.setCategoryEnabled(
+                ProfileManager.getLastUsedRegularProfile(), ContentSettingsType.NOTIFICATIONS, false);
 
         boolean isFirstInstall = PackageUtils.isFirstInstall(this);
 
