@@ -475,6 +475,16 @@ public class PlaylistHostActivity extends AsyncInitializationActivity
 
     private void decorateFairPlayer(Fragment fragment, View view) {
         mFairPlayerFragment = fragment;
+        // The AAR player enables edge-to-edge independently of the library layout.
+        ViewCompat.setOnApplyWindowInsetsListener(view, (root, insets) -> {
+            WindowInsetsCompat window = ViewCompat.getRootWindowInsets(root);
+            int top = (window != null ? window : insets)
+                    .getInsets(WindowInsetsCompat.Type.systemBars()).top;
+            root.setPadding(root.getPaddingLeft(), top,
+                    root.getPaddingRight(), root.getPaddingBottom());
+            return insets;
+        });
+        ViewCompat.requestApplyInsets(view);
         view.setBackgroundColor(getColor(R.color.fair_player_background));
         View toolbar = view.findViewById(R.id.playlistToolbar);
         if (toolbar != null) toolbar.setBackgroundColor(getColor(R.color.fair_player_background));

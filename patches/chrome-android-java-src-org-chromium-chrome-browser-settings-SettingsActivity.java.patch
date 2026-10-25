@@ -1,0 +1,66 @@
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java b/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java
+index a82ab1e..923e501 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsActivity.java
+@@ -39,7 +39,6 @@ import androidx.preference.PreferenceFragmentCompat;
+ import com.google.android.material.appbar.AppBarLayout;
+ 
+ import org.chromium.base.Callback;
+-import org.chromium.base.CallbackUtils;
+ import org.chromium.base.DeviceInfo;
+ import org.chromium.base.Log;
+ import org.chromium.base.metrics.RecordHistogram;
+@@ -81,7 +80,6 @@ import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
+ import org.chromium.components.browser_ui.settings.SettingsFragment;
+ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+-import org.chromium.components.browser_ui.util.ToolbarUtils;
+ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+ import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
+@@ -468,34 +466,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
+     }
+ 
+     private void createSearchCoordinator(@Nullable Bundle savedState) {
+-        Callback<Integer> updateFirstVisibleTitle =
+-                isMultiColumnSettingEnabled()
+-                        ? this::updateFirstVisibleTitle
+-                        : CallbackUtils.emptyCallback();
+-        Toolbar actionBar = findViewById(R.id.action_bar);
+-        mSearchCoordinator =
+-                new SettingsSearchCoordinator(
+-                        this,
+-                        actionBar,
+-                        this::isTwoColumnSettingsVisible,
+-                        mMultiColumnSettings,
+-                        mContainmentHelper.getItemDecorations(),
+-                        mProfile,
+-                        updateFirstVisibleTitle,
+-                        getModalDialogManagerSupplier());
+-        if (mMultiColumnSettings != null) {
+-            if (savedState != null) {
+-                // Title text view gets temporarily hidden while restoring the
+-                // search UI to avoid flickering. See https://crbug.com/482952320.
+-                assumeNonNull(ToolbarUtils.getTitleTextView(actionBar))
+-                        .setVisibility(View.INVISIBLE);
+-            }
+-            mMultiColumnSettings.setOnCreateViewRunnable(
+-                    () -> assumeNonNull(mSearchCoordinator).initializeSearchUi(savedState));
+-            mMultiColumnSettings.addObserver(mSearchCoordinator);
+-        } else {
+-            mSearchCoordinator.initializeSearchUi(savedState);
+-        }
++        // Music Browser: About has no hidden upstream settings search surface.
+     }
+ 
+     private void updateFirstVisibleTitle(int index) {
+@@ -508,7 +479,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
+ 
+     /** Returns true if the AndroidSettingsContainment feature is enabled. */
+     private static boolean isMultiColumnSettingEnabled() {
+-        return ChromeFeatureList.sSettingsMultiColumn.isEnabled();
++        // Music Browser: do not auto-open upstream detail settings on wide windows.
++        return false;
+     }
+ 
+     @Override

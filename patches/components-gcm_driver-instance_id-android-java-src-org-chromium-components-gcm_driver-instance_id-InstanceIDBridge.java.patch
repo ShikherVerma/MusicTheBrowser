@@ -1,0 +1,58 @@
+diff --git a/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java b/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java
+index 370ae28..c3a2d5a 100644
+--- a/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java
++++ b/components/gcm_driver/instance_id/android/java/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridge.java
+@@ -9,9 +9,11 @@ import org.jni_zero.JNINamespace;
+ import org.jni_zero.JniType;
+ import org.jni_zero.NativeMethods;
+ 
++import org.chromium.base.Log;
+ import org.chromium.base.task.AsyncTask;
++import org.chromium.base.task.PostTask;
++import org.chromium.base.task.TaskTraits;
+ import org.chromium.build.annotations.NullMarked;
+-import org.chromium.components.gcm_driver.InstanceIDFlags;
+ import org.chromium.components.gcm_driver.LazySubscriptionsManager;
+ import org.chromium.components.gcm_driver.SubscriptionFlagManager;
+ 
+@@ -116,31 +118,16 @@ public class InstanceIDBridge {
+             final @JniType("std::string") String authorizedEntity,
+             final @JniType("std::string") String scope,
+             int flags) {
+-        new BridgeAsyncTask<String>() {
+-            @Override
+-            protected String doBackgroundWork() {
+-                try {
+-                    // TODO(crbug.com/40789764): Migrate stored LazySubscriptionsManager data to
+-                    // SubscriptionFlagManager.
+-                    LazySubscriptionsManager.storeLazinessInformation(
+-                            LazySubscriptionsManager.buildSubscriptionUniqueId(
+-                                    mSubtype, authorizedEntity),
+-                            (flags & InstanceIDFlags.IS_LAZY) == InstanceIDFlags.IS_LAZY);
+-                    SubscriptionFlagManager.setFlags(
+-                            SubscriptionFlagManager.buildSubscriptionUniqueId(
+-                                    mSubtype, authorizedEntity),
+-                            flags);
+-                    return mInstanceID.getToken(authorizedEntity, scope);
+-                } catch (IOException ex) {
+-                    return "";
+-                }
+-            }
+-
+-            @Override
+-            protected void sendResultToNative(String token) {
+-                InstanceIDBridgeJni.get().didGetToken(mNativeInstanceIDAndroid, requestId, token);
++        // Music Browser has no cloud messaging. Reject before initializing the SDK,
++        // not inside BridgeAsyncTask (which eagerly creates InstanceIDWithSubtype).
++        Runnable unavailable = () -> {
++            if (mNativeInstanceIDAndroid != 0) {
++                Log.i("FairPushGuard", "Cloud messaging token request blocked locally");
++                InstanceIDBridgeJni.get().didGetToken(mNativeInstanceIDAndroid, requestId, "");
+             }
+-        }.execute();
++        };
++        if (sBlockOnAsyncTasksForTesting) unavailable.run();
++        else PostTask.postTask(TaskTraits.UI_DEFAULT, unavailable);
+     }
+ 
+     /** Async wrapper for {@link InstanceID#deleteToken(String, String)}. */

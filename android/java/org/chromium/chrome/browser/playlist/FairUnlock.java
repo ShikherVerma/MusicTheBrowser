@@ -3,6 +3,8 @@ package org.chromium.chrome.browser.playlist;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -38,13 +40,20 @@ public final class FairUnlock {
     private boolean mRestoreRequested;
     private boolean mBusy;
     private String mError;
+    private static final Handler MAIN = new Handler(Looper.getMainLooper());
+
+    // Billing v9 can deliver setup failures and other callbacks on its worker pool.
+    private static void onMain(Runnable callback) {
+        if (Looper.myLooper() == Looper.getMainLooper()) callback.run();
+        else MAIN.post(callback);
+    }
 
     private FairUnlock(Context context) {
         mUnlocked = ChromeSharedPreferences.getInstance().readBoolean(CACHE_KEY, false);
         mClient = BillingClient.newBuilder(context.getApplicationContext())
                 .enablePendingPurchases(
                         PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
-                .setListener((result, purchases) -> {
+                .setListener((result, purchases) -> onMain(() -> {
                     mBusy = false;
                     if (result.getResponseCode() == BillingClient.BillingResponseCode.OK
                             && purchases != null) {
@@ -54,7 +63,7 @@ public final class FairUnlock {
                         mError = "The purchase couldn't be completed. Try again later.";
                     }
                     changed();
-                }).build();
+                })).build();
         connect();
     }
 
@@ -88,24 +97,28 @@ public final class FairUnlock {
         mClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingSetupFinished(BillingResult result) {
-                mConnecting = false;
-                if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    queryPrice();
-                    queryOwned();
-                } else {
-                    mError = "Can't reach Google Play. Try again later.";
-                    mBusy = false;
-                }
-                changed();
+                onMain(() -> {
+                    mConnecting = false;
+                    if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        queryPrice();
+                        queryOwned();
+                    } else {
+                        mError = "Can't reach Google Play. Try again later.";
+                        mBusy = false;
+                    }
+                    changed();
+                });
             }
 
             @Override
             public void onBillingServiceDisconnected() {
-                mConnecting = false;
-                mBusy = false;
-                mError = "Can't reach Google Play. Try again later.";
-                // Keep the cached entitlement offline. An explicit retry reconnects.
-                changed();
+                onMain(() -> {
+                    mConnecting = false;
+                    mBusy = false;
+                    mError = "Can't reach Google Play. Try again later.";
+                    // Keep the cached entitlement offline. An explicit retry reconnects.
+                    changed();
+                });
             }
         });
     }
@@ -114,7 +127,7 @@ public final class FairUnlock {
         QueryProductDetailsParams.Product product = QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(PRODUCT_ID).setProductType(BillingClient.ProductType.INAPP).build();
         mClient.queryProductDetailsAsync(QueryProductDetailsParams.newBuilder()
-                .setProductList(Collections.singletonList(product)).build(), (result, details) -> {
+                .setProductList(Collections.singletonList(product)).build(), (result, details) -> onMain(() -> {
                     if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                         for (ProductDetails found : details.getProductDetailsList()) {
                             if (PRODUCT_ID.equals(found.getProductId())) mProduct = found;
@@ -122,12 +135,12 @@ public final class FairUnlock {
                     }
                     if (price() == null) mError = "Can't reach Google Play. Try again later.";
                     changed();
-                });
+                }));
     }
 
     private void queryOwned() {
         mClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
-                .setProductType(BillingClient.ProductType.INAPP).build(), (result, purchases) -> {
+                .setProductType(BillingClient.ProductType.INAPP).build(), (result, purchases) -> onMain(() -> {
                     mBusy = false;
                     if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                         acceptPurchases(purchases, true);
@@ -139,7 +152,7 @@ public final class FairUnlock {
                     }
                     mRestoreRequested = false;
                     changed();
-                });
+                }));
     }
 
     private void acceptPurchases(List<Purchase> purchases, boolean fullQuery) {
@@ -154,13 +167,13 @@ public final class FairUnlock {
             found = true;
             if (!purchase.isAcknowledged()) {
                 mClient.acknowledgePurchase(AcknowledgePurchaseParams.newBuilder()
-                        .setPurchaseToken(purchase.getPurchaseToken()).build(), result -> {
+                        .setPurchaseToken(purchase.getPurchaseToken()).build(), result -> onMain(() -> {
                             // A failed acknowledgement is retried on the next owned-purchase query.
                             if (result.getResponseCode() != BillingClient.BillingResponseCode.OK) {
                                 mError = "Purchase saved. Reopen the app online to finish confirmation.";
                                 changed();
                             }
-                        });
+                        }));
             }
         }
         if (found || fullQuery) {
