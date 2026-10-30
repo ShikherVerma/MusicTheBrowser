@@ -1780,7 +1780,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1818,7 +1818,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS - Development AutoFill Provider";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "Debug (AppStore)";
 		};
@@ -1851,7 +1851,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Nightly AutoFill Provider";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Nightly;
@@ -1884,7 +1884,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Release AutoFill Provider";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release (AppStore)";
@@ -1917,7 +1917,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1951,7 +1951,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Beta AutoFill Provider";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Beta;
@@ -2219,6 +2219,7 @@
 		2774D3712B682277008A5F42 /* Nightly */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ASSETCATALOG_COMPILER_APPICON_NAME = ActionExtensionIcons;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2310,6 +2311,7 @@
 		27EDE17D29A7D93900F34870 /* Debug (AppStore) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "windows 3d 80s aqua bat holo neon netscape supernova terminal popart popart-dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon_Local;
@@ -2383,7 +2385,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "Debug (AppStore)";
 		};
@@ -2415,13 +2417,14 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS - Development Intents Extension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "Debug (AppStore)";
 		};
 		27EDE18029A7D93900F34870 /* Debug (AppStore) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2527,6 +2530,7 @@
 		27EEEDA62507CDF900024038 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "windows 3d 80s aqua bat holo neon netscape supernova terminal popart popart-dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -2601,7 +2605,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -2666,7 +2670,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -2728,7 +2732,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Nightly;
@@ -2791,7 +2795,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release (AppStore)";
@@ -2854,7 +2858,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Beta;
@@ -2888,7 +2892,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -2918,7 +2922,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Nightly Intents Extension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Nightly;
@@ -2949,7 +2953,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Release Intents Extension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release (AppStore)";
@@ -2981,7 +2985,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -3012,7 +3016,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Beta Intents Extension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Beta;
@@ -3051,7 +3055,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -3088,7 +3092,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "Debug (AppStore)";
 		};
@@ -3122,7 +3126,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Nightly;
@@ -3157,7 +3161,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release (AppStore)";
@@ -3193,7 +3197,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -3228,7 +3232,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Beta;
@@ -3262,7 +3266,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -3293,7 +3297,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS - Development Action Extension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "Debug (AppStore)";
 		};
@@ -3320,7 +3324,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Release Action Extension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release (AppStore)";
@@ -3350,7 +3354,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -3378,7 +3382,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Brave iOS Beta Action Extension";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Beta;
@@ -3386,6 +3390,7 @@
 		CA0391C0271E1026000EB13C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3423,6 +3428,7 @@
 		CA0391C1271E1026000EB13C /* Nightly */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3457,6 +3463,7 @@
 		CA0391C3271E1026000EB13C /* Release (AppStore) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3491,6 +3498,7 @@
 		CA0391C4271E1026000EB13C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3526,6 +3534,7 @@
 		CA0391C5271E1026000EB13C /* Beta */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3629,6 +3638,7 @@
 		E448FC9E1AEE7A6000869B6C /* Release (AppStore) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "windows 3d 80s aqua bat holo neon netscape supernova terminal popart popart-dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -3717,6 +3727,7 @@
 		E6DCC2061DCBB6F100CEC4B7 /* Nightly */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "windows 3d 80s aqua bat holo neon netscape supernova terminal popart popart-dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon_Nightly;
@@ -3802,6 +3813,7 @@
 		E6FCC42A1C40562400DF6113 /* Beta */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "windows 3d 80s aqua bat holo neon netscape supernova terminal popart popart-dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon_Beta;
@@ -3884,6 +3896,7 @@
 		F84B21DE1A090F8100AAB793 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				TARGETED_DEVICE_FAMILY = 1;
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "windows 3d 80s aqua bat holo neon netscape supernova terminal popart popart-dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon_Local;
